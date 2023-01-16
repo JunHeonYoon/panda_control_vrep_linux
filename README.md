@@ -1,6 +1,6 @@
 # Panda Control in V-REP (CoppeliaSim)
 
-##This code is made by Suhan Park (https://github.com/psh117/panda_control_vrep_linux)
+## This code is made by Suhan Park (https://github.com/psh117/panda_control_vrep_linux)
 
 ## Requirements
 - CoppeliaSim 4.0.0
