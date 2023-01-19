@@ -111,7 +111,8 @@ void ArmController::compute()
 	{
 		Vector7d target_position;
 		// target_position << 0.0, 0.0, 0.0, -M_PI / 2., 0.0, M_PI / 2, 0;
-		target_position << 0.0, 0.0, 0.0, -M_PI / 6., 0.0, M_PI / 2, 0;
+		// target_position << 0.0, 0.0, 0.0, -M_PI / 6., 0.0, M_PI / 2, 0;
+		target_position << 0.0, -M_PI / 3, 0.0, -M_PI / 2., 0.0, M_PI / 6, 0;
 		moveJointPositionTorque(target_position, 1.0);     
 		// moveJointPosition(target_position, 1.0);                
 	}
@@ -210,6 +211,28 @@ void ArmController::compute()
 		// target_q << 0.0, 0.0, 0.0, -M_PI/3., 0.0, M_PI / 2, 0; 
 		hw_4_3(target_q, 2.0, true);
 	}
+	else if (control_mode_ == "hw_5_1")
+	{
+		Vector12d target_x;
+		target_x << x_init_, rotation_init_.col(0), rotation_init_.col(1), rotation_init_.col(2);
+		// target_x(1) += 0.02;
+		target_x(1) += 0.1; 
+		hw_5_1(target_x, 2.0, false);
+	}
+	else if (control_mode_ == "hw_5_2")
+	{
+		Vector12d target_x;
+		target_x << 0.3, -0.012, 0.52,
+				rotation_init_.col(0), rotation_init_.col(1), rotation_init_.col(2);
+		hw_5_2(target_x, 4.0);
+	}
+	else if (control_mode_ == "hw_7")
+	{
+		Vector12d target_x;
+		target_x << 0.3, -0.012, 0.52,
+				rotation_init_.col(0), rotation_init_.col(1), rotation_init_.col(2);
+		hw_7(target_x, 8.0);
+	}
 	else
 	{
 		torque_desired_ = g_;
@@ -276,6 +299,19 @@ void ArmController::recordHw4(int file_number, double duration, const Vector7d &
 	else if (play_time_ >= control_start_time_ + duration + 1.0)
 	{
 		cout << "Record end" << endl;
+	}
+}
+
+void ArmController::recordHw5(int file_number, double duration, const Vector3d & x_desired, const Vector6d & xd_desired)
+{
+	if (play_time_ < control_start_time_ + duration + 1.0)
+	{
+		hw_plot_files_[file_number] 
+		<< x_.transpose()<< " " 
+		<< x_desired.transpose() <<  " "
+		<< xd_desired.transpose() << " "
+		<< x_dot_.transpose()
+		<< endl;
 	}
 }
 
@@ -443,7 +479,7 @@ void ArmController::CLIK(const Vector12d & target_x, double duration)
 
 	// Feedback control을 위해 pose에 대한 error를 구한다.
 	x_error.segment<3>(0) = x_cubic - x_;
-	x_error.segment<3>(3) = -0.5 * DyrosMath::getPhi(rotation_, rotation_cubic);
+	x_error.segment<3>(3) = DyrosMath::getPhi(rotation_, rotation_cubic);
 
 	// debug_file_ << xd_desired.transpose() << endl;
 	// xd_desired.segment<3>(3).setZero();
@@ -556,7 +592,7 @@ void ArmController::hw_2_2(const Vector12d & target_x, double duration)
 
 	// Feedback control을 위해 pose에 대한 error를 구한다.
 	x_error.segment<3>(0) = x_cubic - CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 1], com_position_[DOF - 1], false);
-	x_error.segment<3>(3) = -0.5 * DyrosMath::getPhi(rotation_, rotation_cubic);
+	x_error.segment<3>(3) = DyrosMath::getPhi(rotation_, rotation_cubic);
 
 	// Feedback gain 설정
 	Vector6d kp_diag;
@@ -616,7 +652,7 @@ void ArmController::hw_2_3(const Vector12d & target_x, double duration)
 
 	// Feedback control을 위해 pose에 대한 error를 구한다.
 	x_error.segment<3>(0) = x_cubic - CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 1], com_position_[DOF - 1], false);
-	x_error.segment<3>(3) = -0.5 * DyrosMath::getPhi(rotation_, rotation_cubic);
+	x_error.segment<3>(3) = DyrosMath::getPhi(rotation_, rotation_cubic);
 
 	// Feedback gain 설정
 	Vector6d kp_diag;
@@ -871,7 +907,7 @@ void ArmController::hw_4_1(const Vector7d &target_q, double duration)
 	// desired joint value
 	Vector7d q_desired, qd_desired;
 	qd_desired = Vector7d::Zero();
-	if(play_time_ < control_start_time_ + duration/2)  q_desired << 0.0, 0.0, 0.0, -M_PI / 6., 0.0, M_PI / 2, 0;
+	if(play_time_ < control_start_time_ + duration/2)  q_desired = q_init_;
 	else q_desired = target_q;
 
 	// Apply force
@@ -898,7 +934,7 @@ void ArmController::hw_4_2(const Vector7d &target_q, double duration, bool isSte
 	if(isStep)
 	{
 		qd_desired = Vector7d::Zero();
-		if(play_time_ < control_start_time_ + duration/2)  q_desired << 0.0, 0.0, 0.0, -M_PI / 6., 0.0, M_PI / 2, 0;
+		if(play_time_ < control_start_time_ + duration/2)  q_desired = q_init_;
 		else q_desired = target_q;
 	}
 	else
@@ -926,8 +962,8 @@ void ArmController::hw_4_3(const Vector7d &target_q, double duration, bool isSte
 	// Gain Matrix
 	Vector7d kp_diag, kv_diag;
 	Matrix7d kp, kv;
-	kp_diag = 500 * Vector7d::Ones();
-	kv_diag = 20 * Vector7d::Ones();
+	kp_diag = 400 * Vector7d::Ones();
+	kv_diag = 40 * Vector7d::Ones();
 	kp = kp_diag.asDiagonal();
 	kv = kv_diag.asDiagonal();
 
@@ -936,7 +972,7 @@ void ArmController::hw_4_3(const Vector7d &target_q, double duration, bool isSte
 	if(isStep)
 	{
 		qd_desired = Vector7d::Zero();
-		if(play_time_ < control_start_time_ + duration/2)  q_desired << 0.0, 0.0, 0.0, -M_PI / 6., 0.0, M_PI / 2, 0;
+		if(play_time_ < control_start_time_ + duration/2)  q_desired = q_init_;
 		else q_desired = target_q;
 	}
 	else
@@ -957,10 +993,182 @@ void ArmController::hw_4_3(const Vector7d &target_q, double duration, bool isSte
 	torque_desired_ = m_ * ( kp*( q_desired - q_ ) + kv*( qd_desired - qdot_ ) ) + g_;
 
 	// record
-	recordHw4(12, duration, q_desired);
+	if(isStep) recordHw4(12, duration, q_desired);
+	else recordHw4(13, duration, q_desired);
+	
 }
 
+void ArmController::hw_5_1(const Vector12d &target_x, double duration, bool isStep)
+{
+	double kp, kv;
+	kp = 400.0;
+	kv = 40.0;
 
+	Vector3d x_desired; // pose, orientation
+	Matrix3d rotation_desired;
+	Vector6d xd_desired, x_error; // v, w
+	
+	if(isStep)
+	{
+		xd_desired = Vector6d::Zero();
+		if(play_time_ < control_start_time_ + duration/2)
+		{
+			x_desired = x_init_;
+			rotation_desired = rotation_init_;
+		}
+		else
+		{
+			x_desired = target_x.head(3);
+			rotation_desired << target_x.tail(9);
+		}
+	}
+	else
+	{
+		for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired linear velocity를 구한다.
+		{
+			xd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,
+				control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
+		}
+		Matrix3d rotation;
+
+		for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired angular velocity를 구한다.
+		{
+			rotation.block<3, 1>(0, i) = target_x.segment<3>(3 + i * 3);
+		}
+		xd_desired.segment<3>(3) = DyrosMath::rotationCubicDot(play_time_, control_start_time_,
+			control_start_time_ + duration, Vector3d::Zero(), Vector3d::Zero(), rotation_init_, rotation);
+
+		for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired position을 구한다.
+		{
+			x_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,
+				control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
+		}
+
+		// 현재 시간에 맞는 desired ratation을 구한다.
+		rotation_desired = DyrosMath::rotationCubic(play_time_, control_start_time_,
+			control_start_time_ + duration, rotation_init_, rotation);
+	}
+	
+	Vector6d control_force; // force, momentum
+	x_error.segment<3>(0) = x_desired - x_;	
+	x_error.segment<3>(3) = DyrosMath::getPhi(rotation_, rotation_desired);
+	control_force.segment<3>(0) = kp * x_error.head(3) + kv * (xd_desired.head(3) - x_dot_.head(3));
+	control_force.segment<3>(3) = -kp * x_error.tail(3) - kv * xd_desired.tail(3);
+
+	Vector7d null_torque = m_ * ( kp * (q_init_ - q_) - kv * qdot_ );
+	Matrix6d PseudoKine = ( j_ * m_.inverse() * j_.transpose() ).inverse();
+	Matrix<double, 7, 6> GeneralInvJ = m_.inverse() * j_.transpose() * PseudoKine;
+
+
+	torque_desired_ = j_.transpose() * PseudoKine * control_force + ( EYE(7) - j_.transpose() * GeneralInvJ.transpose() ) * null_torque +  g_;
+
+	if(isStep) recordHw5(14, duration, x_desired, xd_desired);
+	else recordHw5(15, duration, x_desired, xd_desired);
+}
+
+void ArmController::hw_5_2(const Vector12d &target_x, double duration)
+{
+	double kp, kv;
+	kp = 400.0;
+	kv = 40.0;
+
+	Vector3d x_desired; // pose, orientation
+	Matrix3d rotation_desired;
+	Vector6d xd_desired, x_error; // v, w
+	double xd_max = 0.3;
+	
+	if(play_time_ < control_start_time_ + duration/2)
+	{
+		x_desired = x_init_;
+		rotation_desired = rotation_init_;
+	}
+	else
+	{
+		x_desired = target_x.head(3);
+		rotation_desired << target_x.tail(9);
+	}
+
+	if( ( kp/kv * (x_desired - x_) ).norm() < xd_max )
+	{
+		xd_desired.head(3) = kp/kv * (x_desired - x_);
+	}
+	else
+	{
+		xd_desired.head(3) = xd_max / (x_desired - x_).norm() * (x_desired - x_);
+	}
+	xd_desired.tail(3) = Vector3d::Zero();
+	
+	Vector6d control_force; // force, momentum
+	// x_error.segment<3>(0) = x_desired - x_;	
+	x_error.segment<3>(3) = DyrosMath::getPhi(rotation_, rotation_desired);
+	control_force.segment<3>(0) = kv * (xd_desired.head(3) - x_dot_.head(3));
+	control_force.segment<3>(3) = -kp * x_error.tail(3) - kv * xd_desired.tail(3);
+
+	Vector7d null_torque = m_ * ( kp * (q_init_ - q_) - kv * qdot_ );
+	Matrix6d PseudoKine = ( j_ * m_.inverse() * j_.transpose() ).inverse();
+	Matrix<double, 7, 6> GeneralInvJ = m_.inverse() * j_.transpose() * PseudoKine;
+
+
+	torque_desired_ = j_.transpose() * PseudoKine * control_force + ( EYE(7) - j_.transpose() * GeneralInvJ.transpose() ) * null_torque +  g_;
+
+	recordHw5(16, duration, x_desired, xd_desired);
+}
+
+void ArmController::hw_7(const Vector12d &target_x, double duration)
+{
+	double kp, kv;
+	kp = 400.0;
+	kv = 40.0;
+
+	Vector3d x_desired; // pose, orientation
+	Matrix3d rotation_desired;
+	Vector6d xd_desired, x_error; // v, w
+	double xd_max = 0.3;
+	
+	if(play_time_ < control_start_time_ + duration/2)
+	{
+		x_desired = x_init_;
+		rotation_desired = rotation_init_;
+	}
+	else
+	{
+		x_desired = target_x.head(3);
+		rotation_desired << target_x.tail(9);
+	}
+
+	if( ( kp/kv * (x_desired - x_) ).norm() < xd_max )
+	{
+		xd_desired.head(3) = kp/kv * (x_desired - x_);
+	}
+	else
+	{
+		xd_desired.head(3) = xd_max / (x_desired - x_).norm() * (x_desired - x_);
+	}
+	xd_desired.tail(3) = Vector3d::Zero();
+
+	Vector3d x_obs;
+	x_obs << 0.15, -0.012, 0.65; 
+	double dist_obs, dist_0, k_obs;
+	dist_obs = (x_ - x_obs).norm();
+	dist_0 = 0.15;
+	k_obs = 0.1;
+	Vector3d rep_force = k_obs * (1/dist_obs - 1/dist_0) * pow(dist_obs, -3) * (x_ - x_obs);
+	
+	Vector6d control_force; // force, momentum
+	// x_error.segment<3>(0) = x_desired - x_;	
+	x_error.segment<3>(3) = DyrosMath::getPhi(rotation_, rotation_desired);
+	control_force.segment<3>(0) = kv * (xd_desired.head(3) - x_dot_.head(3)) + rep_force;
+	control_force.segment<3>(3) = -kp * x_error.tail(3) - kv * xd_desired.tail(3);
+
+	Vector7d null_torque = m_ * ( kp * (q_init_ - q_) - kv * qdot_ );
+	Matrix6d PseudoKine = ( j_ * m_.inverse() * j_.transpose() ).inverse();
+	Matrix<double, 7, 6> GeneralInvJ = m_.inverse() * j_.transpose() * PseudoKine;
+
+
+	torque_desired_ = j_.transpose() * PseudoKine * control_force + ( EYE(7) - j_.transpose() * GeneralInvJ.transpose() ) * null_torque +  g_;
+
+	recordHw5(17, duration, x_desired, xd_desired);
+}
 
 // Controller Core Methods ----------------------------
 

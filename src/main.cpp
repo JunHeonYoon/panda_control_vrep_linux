@@ -41,9 +41,9 @@ int kbhit(void)
 
 int main()
 {
-	// VRepBridge vb(VRepBridge::CTRL_TORQUE); // Torque controlled
-	VRepBridge vb(VRepBridge::CTRL_POSITION); // Position controlled 
-	const double hz = 100;  // For Position control, 100hz is appropriate, else 1000hz
+	VRepBridge vb(VRepBridge::CTRL_TORQUE); // Torque controlled
+	// VRepBridge vb(VRepBridge::CTRL_POSITION); // Position controlled 
+	const double hz = 1000;  // For Position control, 100hz is appropriate, else 1000hz
 	ArmController ac(hz);
 	bool is_simulation_run = true;
 	bool exit_flag = false;
@@ -78,9 +78,9 @@ int main()
 			case 't':
 				ac.setMode("torque_ctrl_dynamic");
 				break;
-			case '1':
-				ac.setMode("simple_jacobian");
-				break;
+			// case '1':
+			// 	ac.setMode("simple_jacobian");
+			// 	break;
 			// case '2':
 			// 	ac.setMode("feedback_jacobian");
 			// 	break;
@@ -105,17 +105,24 @@ int main()
 			// case '9':
 			// 	ac.setMode("hw_3_3");
 			// 	break;			
-			// case '1':
-			// 	ac.setMode("hw_4_1");
-			// 	break;
-			// case '2':
-			// 	ac.setMode("hw_4_2");
-			// 	break;
-			// case '3':
-			// 	ac.setMode("hw_4_3");
-			// 	break;
-
-
+			case '1':
+				ac.setMode("hw_4_1");
+				break;
+			case '2':
+				ac.setMode("hw_4_2");
+				break;
+			case '3':
+				ac.setMode("hw_4_3");
+				break;
+			case '4':
+				ac.setMode("hw_5_1");
+				break;
+			case '5':
+				ac.setMode("hw_5_2");
+				break;
+			case '6':
+				ac.setMode("hw_7");
+				break;
 			case '\t':
 				if (is_simulation_run) {
 					cout << "Simulation Pause" << endl;
