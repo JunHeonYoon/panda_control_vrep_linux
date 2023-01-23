@@ -134,4 +134,4 @@ moveJointPositionTorque(target_position, 1.0);
 ```
 3. use 'franka_panda_wo_torque.ttt'
 
-## If you don't have "Vortex" engine, change physics engine to "Bullet 2.78"
+# If you don't have "Vortex" engine, change physics engine to "Bullet 2.78"
