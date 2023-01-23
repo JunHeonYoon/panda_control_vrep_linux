@@ -133,4 +133,4 @@ case '6':
 moveJointPositionTorque(target_position, 1.0);
 // moveJointPosition(target_position, 1.0);
 ```
-3. use 'franka_panda_wo_torque.ttt'
+3. use 'franka_panda_torque_wo_gripper.ttt'
