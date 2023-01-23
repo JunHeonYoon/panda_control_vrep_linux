@@ -23,6 +23,7 @@ the port is set to -3
 ```sh
 ./panda_control_vrep
 ````
+-If you don't have "Vortex" engine, change physics engine to "Bullet 2.78"
 
 ## Control Mode
 There are two control mode :
@@ -133,5 +134,3 @@ moveJointPositionTorque(target_position, 1.0);
 // moveJointPosition(target_position, 1.0);
 ```
 3. use 'franka_panda_wo_torque.ttt'
-
-# If you don't have "Vortex" engine, change physics engine to "Bullet 2.78"
