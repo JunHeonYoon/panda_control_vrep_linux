@@ -138,13 +138,13 @@ private:
 	constexpr static int NUM_HW_PLOT{20};
 	ofstream hw_plot_files_[NUM_HW_PLOT];
 	const string hw_plot_file_names_[NUM_HW_PLOT]
-	{"simple", "feedback", "clik", "reference", "hw_2_1", "hw_2_2", "hw_2_3", "hw_3_1", "hw_3_2", "hw_3_3"
+	{"simple", "feedback", "clik", "reference", "hw_2_1", "hw_2_2", "hw_2_3", "hw_3_1", "hw_3_2", "hw_3_3_1", "hw_3_3_2"
 	, "hw_4_1", "hw_4_2", "hw_4_3_1", "hw_4_3_2", "hw_5_1_1", "hw_5_1_2", "hw_5_2", "hw_7"};
 
 	void record(int file_number, double duration);
 	void record(int file_number, double duration, const stringstream & ss);
-	void recordHW2(int file_number, double duration, const Vector3d & x_cubic, const Vector6d & xd_desired);
-	void recordHw3(int file_number, double duration, const Vector6d & x_cubic, const Vector6d & xd_desired);
+	void recordHW2(int file_number, double duration, const Vector3d & x_desired);
+	void recordHw3(int file_number, double duration, const Vector6d & x_desired);
 	void recordHw4(int file_number, double duration, const Vector7d & q_desired);
 	void recordHw5(int file_number, double duration, const Vector3d & x_desired, const Vector6d & xd_desired);
 };

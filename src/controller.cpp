@@ -104,17 +104,17 @@ void ArmController::compute()
 	{
 		Vector7d target_position;
 		target_position << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, M_PI / 4;
-		moveJointPositionTorque(target_position, 1.0);
-		// moveJointPosition(target_position, 1.0);
+		// moveJointPositionTorque(target_position, 1.0);
+		moveJointPosition(target_position, 1.0);
 	}
 	else if(control_mode_ == "joint_ctrl_init")
 	{
 		Vector7d target_position;
-		// target_position << 0.0, 0.0, 0.0, -M_PI / 2., 0.0, M_PI / 2, 0;
+		target_position << 0.0, 0.0, 0.0, -M_PI / 2., 0.0, M_PI / 2, 0;
 		// target_position << 0.0, 0.0, 0.0, -M_PI / 6., 0.0, M_PI / 2, 0;
-		target_position << 0.0, -M_PI / 3, 0.0, -M_PI / 2., 0.0, M_PI / 6, 0;
-		moveJointPositionTorque(target_position, 1.0);     
-		// moveJointPosition(target_position, 1.0);                
+		// target_position << 0.0, -M_PI / 3, 0.0, -M_PI / 2., 0.0, M_PI / 6, 0;
+		// moveJointPositionTorque(target_position, 1.0);     
+		moveJointPosition(target_position, 1.0);                
 	}
 	else if (control_mode_ == "simple_jacobian")
 	{
@@ -150,7 +150,7 @@ void ArmController::compute()
 			1, 0, 0,
 			0, -1, 0,
 			0, 0, -1;
-		hw_2_1(target_x, 2.0);
+		hw_2_1(target_x, 4.0);
 	}
 	else if (control_mode_ == "hw_2_2")
 	{
@@ -159,7 +159,7 @@ void ArmController::compute()
 			1, 0, 0,
 			0, -1, 0,
 			0, 0, -1;
-		hw_2_2(target_x, 2.0);
+		hw_2_2(target_x, 4.0);
 	}
 	else if (control_mode_ == "hw_2_3")
 	{
@@ -168,48 +168,48 @@ void ArmController::compute()
 			1, 0, 0,
 			0, -1, 0,
 			0, 0, -1;
-		hw_2_3(target_x, 2.0);
+		hw_2_3(target_x, 4.0);
 	}
 	else if (control_mode_ == "hw_3_1")
 	{
 		Vector6d target_x;
 		target_x << 0.25,  0.28, 0.65,
 					0.00, -0.15, 0.60;
-		hw_3_1(target_x, 2.0);
+		hw_3_1(target_x, 4.0);
 	}
 	else if (control_mode_ == "hw_3_2")
 	{
 		Vector6d target_x;
 		target_x << 0.25,  0.28, 0.65,
 					0.00, -0.15, 0.60;
-		hw_3_2(target_x, 2.0);
+		hw_3_2(target_x, 4.0);
 	}
 	else if (control_mode_ == "hw_3_3")
 	{
 		Vector6d target_x;
 		target_x << 0.25,  0.28, 0.65,
 					0.00, -0.15, 0.60;
-		hw_3_3(target_x, 2.0, true);
+		hw_3_3(target_x, 4.0, false); // true : hw_3_3_1, false : hw_3_3_2
 	}
 	else if (control_mode_ == "hw_4_1")
 	{
 		Vector7d target_q;
 		target_q << 0.0, 0.0, 0.0, -M_PI*(25./180.), 0.0, M_PI / 2, 0; 
-		hw_4_1(target_q, 2.0);
+		hw_4_1(target_q, 4.0);
 	}
 	else if (control_mode_ == "hw_4_2")
 	{
 		Vector7d target_q;
 		// target_q << 0.0, 0.0, 0.0, -M_PI*(25./180.), 0.0, M_PI / 2, 0;
 		target_q << 0.0, 0.0, 0.0, -M_PI/3., 0.0, M_PI / 2, 0; 
-		hw_4_2(target_q, 2.0, false);
+		hw_4_2(target_q, 4.0, false);
 	}
 	else if (control_mode_ == "hw_4_3")
 	{
 		Vector7d target_q;
 		target_q << 0.0, 0.0, 0.0, -M_PI*(25./180.), 0.0, M_PI / 2, 0;
 		// target_q << 0.0, 0.0, 0.0, -M_PI/3., 0.0, M_PI / 2, 0; 
-		hw_4_3(target_q, 2.0, true);
+		hw_4_3(target_q, 4.0, true);
 	}
 	else if (control_mode_ == "hw_5_1")
 	{
@@ -217,7 +217,7 @@ void ArmController::compute()
 		target_x << x_init_, rotation_init_.col(0), rotation_init_.col(1), rotation_init_.col(2);
 		// target_x(1) += 0.02;
 		target_x(1) += 0.1; 
-		hw_5_1(target_x, 2.0, false);
+		hw_5_1(target_x, 4.0, false);
 	}
 	else if (control_mode_ == "hw_5_2")
 	{
@@ -262,25 +262,24 @@ void ArmController::record(int file_number, double duration, const stringstream 
 	}
 }
 
-void ArmController::recordHW2(int file_number, double duration, const Vector3d & x_cubic, const Vector6d & xd_desired)
+void ArmController::recordHW2(int file_number, double duration, const Vector3d & x_desired)
 {
 	if (play_time_ < control_start_time_ + duration + 1.0)
 	{
 		hw_plot_files_[file_number] 
-		<< x_.transpose()<< " " << x_dot_.transpose()<< " " 
-		<< x_cubic.transpose() << " " << xd_desired.transpose() << " "
+		<< x_.transpose()<< " " << x_desired.transpose() << " " 
 		<< q_desired_.transpose()
 		<< endl;
 	}
 }
 
-void ArmController::recordHw3(int file_number, double duration, const Vector6d &x_cubic, const Vector6d &xd_desired)
+void ArmController::recordHw3(int file_number, double duration, const Vector6d &x_desired)
 {
 	if (play_time_ < control_start_time_ + duration + 1.0)
 	{
 		hw_plot_files_[file_number] 
 		<< x_.transpose()<< " " << x_2_.transpose()<< " "
-		<< x_cubic.transpose() <<  " "
+		<< x_desired.transpose() <<  " "
 		<< q_desired_.transpose()
 		<< endl;
 	}
@@ -325,28 +324,31 @@ void ArmController::printState()
 	{
 		DBG_CNT = 0;
 
+		cout << "time     : " << std::fixed << std::setprecision(3) << play_time_ << endl;
 		cout << "q now    :\t";
 		cout << std::fixed << std::setprecision(3) << q_.transpose() << endl;
 		cout << "q desired:\t";
 		cout << std::fixed << std::setprecision(3) << q_desired_.transpose() << endl;
-		cout << "t desired:\t";
-		cout << std::fixed << std::setprecision(3) << torque_desired_.transpose() << endl;
 		cout << "x        :\t";
 		cout << x_.transpose() << endl;
 		cout << "R        :\t" << endl;
 		cout << std::fixed << std::setprecision(3) << rotation_ << endl;
+		
+		if(control_mode_ == "hw_3_1")
+		{
+			Matrix<double, 6, 7>j;
+			j <<  j_.block <3, DOF>(0, 0),
+			j_2_.block<3, DOF>(0, 0); 
+			
+			cout << "hw 3-1 jacobian:" << endl;
+			cout << j << endl;
 
-		Matrix<double, 6, 7>j;
-		j <<  j_.block <3, DOF>(0, 0),
-		  j_2_.block<3, DOF>(0, 0); 
-		  
-		cout << "hw 3-1 jacobian:" << endl;
-		cout << j << endl;
+			Vector6d x;
+			x << x_, x_2_;
 
-		Vector6d x;
-		x << x_, x_2_;
-
-		cout << "hw 3-1 x:\t" << x.transpose() << endl;
+			cout << "hw 3-1 x:\t" << x.transpose() << endl;
+		}
+		
 	}
 }
 
@@ -501,192 +503,214 @@ void ArmController::CLIK(const Vector12d & target_x, double duration)
 void ArmController::hw_2_1(const Vector12d & target_x, double duration)
 {
 	//------------------------------------------------------------------------
-	// 먼저 주어진 data (최종 목표 pose, 도달 시간)을 통해 현재 시간에 맞는
-	// desired velocity를 구한다.
-	// 여기서 초기 pose는 주어진 상태이고, 초기와 최종 velocity는 0으로 가정한다.
+	// Firstly, calculate desired pose and velocity ( end-effector ) for current time
+	// by given data ( target pose, duration ).
+	// Initial pose is given, initial and final velocity are zero.
 	
-	// Velocity는 단순 plot을 위해 계산함. (실제 알고리즘에 사용X)
-	Vector6d xd_desired, x_error;
-	Vector3d x_cubic;
+	Vector6d xd_desired; // v, w
+	Vector3d x_desired; // only for position
 
-	for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired linear velocity를 구한다.
+	// desired linear velocity
+	for (int i = 0; i < 3; i++) 
 	{
 		xd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,
 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
 	}
-	Matrix3d rotation;
 
-	for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired angular velocity를 구한다.
+	// Get target rotation matrix
+	Matrix3d rotation;
+	for (int i = 0; i < 3; i++) 
 	{
 		rotation.block<3, 1>(0, i) = target_x.segment<3>(3 + i * 3);
 	}
-	xd_desired.segment<3>(3) = DyrosMath::rotationCubicDot(play_time_, control_start_time_,
+
+	// desired angular velocity
+	xd_desired.tail(3) = DyrosMath::rotationCubicDot(play_time_, control_start_time_,
 		control_start_time_ + duration, Vector3d::Zero(), Vector3d::Zero(), rotation_init_, rotation);
 
-	for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired position을 구한다.
+	// desired position
+	for (int i = 0; i < 3; i++)
 	{
-		x_cubic(i) = DyrosMath::cubic(play_time_, control_start_time_,
+		x_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,
 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
 	}
 
-	// 현재 시간에 맞는 desired ratation을 구한다.
-	Matrix3d rotation_cubic = DyrosMath::rotationCubic(play_time_, control_start_time_,
+	// desired orientation
+	Matrix3d rotation_desired = DyrosMath::rotationCubic(play_time_, control_start_time_,
 		control_start_time_ + duration, rotation_init_, rotation);
 	//---------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------
-	// 그 다음 계산한 값들을 기반으로 Jacobian base control을 진행한다.
-	// 여기서 현재 jacobian과 end-effector의 pose는 실시간으로 받아온다.
+	// After calcuate desired pose and velocity, 
+	// calculate desired joint velocity by simple jacobian algorithm.
 
+	// Get jacobian from desired joint value, not current joint value
 	Matrix<double, 6, 7> j_qd = jacobianFromqd(0);
 
-	// joint 값 계산 (Jacobian base)
+	// desired joint velocity and joint position
 	Vector7d qd_desired = j_qd.transpose() * (j_qd*j_qd.transpose()).inverse() * xd_desired;
-	q_desired_ = q_desired_ + qd_desired / hz_; // q_desired_는 실시간으로 로봇으로 보내진다.
+	q_desired_ = q_desired_ + qd_desired / hz_; 
 	// ----------------------------------------------------------------------------
 
 	// ----------------------------------------------------------------------------
-	// 데이터 저장
-	recordHW2(4, duration, x_cubic, xd_desired);
+	// Save data
+	// [ current position, desired position, joint position ]
+	recordHW2(4, duration, x_desired);
 	// ----------------------------------------------------------------------------
 }
 
 void ArmController::hw_2_2(const Vector12d & target_x, double duration)
 {
 	//------------------------------------------------------------------------
-	// 먼저 주어진 data (최종 목표 pose, 도달 시간)을 통해 현재 시간에 맞는 desired pose와 
-	// desired velocity를 구한다.
-	// 여기서 초기 pose는 주어진 상태이고, 초기와 최종 velocity는 0으로 가정한다.
+	// Firstly, calculate desired pose and velocity ( end-effector ) for current time
+	// by given data ( target pose, duration ).
+	// Initial pose is given, initial and final velocity are zero.
+	
+	Vector6d xd_desired; // v, w
+	Vector3d x_desired; // only for position
 
-	Vector6d xd_desired, x_error;
-	Vector3d x_cubic;
-
-	for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired linear velocity를 구한다.
+	// desired linear velocity
+	for (int i = 0; i < 3; i++) 
 	{
 		xd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,
 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
 	}
-	Matrix3d rotation;
 
-	for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired angular velocity를 구한다.
+	// Get target rotation matrix
+	Matrix3d rotation;
+	for (int i = 0; i < 3; i++) 
 	{
 		rotation.block<3, 1>(0, i) = target_x.segment<3>(3 + i * 3);
 	}
-	xd_desired.segment<3>(3) = DyrosMath::rotationCubicDot(play_time_, control_start_time_,
+
+	// desired angular velocity
+	xd_desired.tail(3) = DyrosMath::rotationCubicDot(play_time_, control_start_time_,
 		control_start_time_ + duration, Vector3d::Zero(), Vector3d::Zero(), rotation_init_, rotation);
 
-	for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired position을 구한다.
+	// desired position
+	for (int i = 0; i < 3; i++)
 	{
-		x_cubic(i) = DyrosMath::cubic(play_time_, control_start_time_,
+		x_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,
 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
 	}
 
-	// 현재 시간에 맞는 desired ratation을 구한다.
-	Matrix3d rotation_cubic = DyrosMath::rotationCubic(play_time_, control_start_time_,
+	// desired orientation
+	Matrix3d rotation_desired = DyrosMath::rotationCubic(play_time_, control_start_time_,
 		control_start_time_ + duration, rotation_init_, rotation);
 	//---------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------
-	// 그 다음 계산한 값들을 기반으로 CLIK control을 진행한다.
-	// 여기서 현재 jacobian과 end-effector의 pose는 실시간으로 받아온다.
+	// After calcuate desired pose and velocity, 
+	// calculate desired joint velocity by Closed Loop Inverse Kinematic (CLIK).
 
-	// Feedback control을 위해 pose에 대한 error를 구한다.
-	x_error.segment<3>(0) = x_cubic - CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 1], com_position_[DOF - 1], false);
-	x_error.segment<3>(3) = DyrosMath::getPhi(rotation_, rotation_cubic);
+	// error of pose 
+	Vector6d x_error;
+	x_error.head(3) = x_desired - CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 1], com_position_[DOF - 1], false);
+	x_error.tail(3) = DyrosMath::getPhi(CalcBodyWorldOrientation(*model_, q_desired_, body_id_[DOF - 1], false).transpose(), rotation_desired);
 
-	// Feedback gain 설정
+	// set feedback gain 
 	Vector6d kp_diag;
-	kp_diag << 100, 100, 100, 10, 10, 10;
+	kp_diag << 50, 50, 50, 10, 10, 10;
 	Matrix6d kp = kp_diag.asDiagonal();
 
-	// joint 값 계산 (CLIK)
+	// desired joint velocity and joint position
+	// Get jacobian from desired joint value, not current joint value
 	Matrix<double, 6, 7> j_qd = jacobianFromqd(0);
 	Vector7d qd_desired = j_qd.transpose() * (j_qd*j_qd.transpose()).inverse() * ( xd_desired + kp * x_error );
-	q_desired_ = q_desired_ + qd_desired / hz_; // q_desired_는 실시간으로 로봇으로 보내진다.
+	q_desired_ = q_desired_ + qd_desired / hz_; 
 	// ----------------------------------------------------------------------------
 
 	// ----------------------------------------------------------------------------
-	// 데이터 저장
-	recordHW2(5, duration, x_cubic, xd_desired);
+	// Save data
+	// [ current position, desired position, joint position ]
+	recordHW2(5, duration, x_desired);
 	// ----------------------------------------------------------------------------
 }
 
 void ArmController::hw_2_3(const Vector12d & target_x, double duration)
 {
 	//------------------------------------------------------------------------
-	// 먼저 주어진 data (최종 목표 pose, 도달 시간)을 통해 현재 시간에 맞는 desired pose와 
-	// desired velocity를 구한다.
-	// 여기서 초기 pose는 주어진 상태이고, 초기와 최종 velocity는 0으로 가정한다.
+	// Firstly, calculate desired pose and velocity ( end-effector ) for current time
+	// by given data ( target pose, duration ).
+	// Initial pose is given, initial and final velocity are zero.
+	
+	Vector6d xd_desired; // v, w
+	Vector3d x_desired; // only for position
 
-	Vector6d xd_desired, x_error;
-	Vector3d x_cubic;
-
-	for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired linear velocity를 구한다.
+	// desired linear velocity
+	for (int i = 0; i < 3; i++) 
 	{
 		xd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,
 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
 	}
-	Matrix3d rotation;
 
-	for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired angular velocity를 구한다.
+	// Get target rotation matrix
+	Matrix3d rotation;
+	for (int i = 0; i < 3; i++) 
 	{
 		rotation.block<3, 1>(0, i) = target_x.segment<3>(3 + i * 3);
 	}
-	xd_desired.segment<3>(3) = DyrosMath::rotationCubicDot(play_time_, control_start_time_,
+
+	// desired angular velocity
+	xd_desired.tail(3) = DyrosMath::rotationCubicDot(play_time_, control_start_time_,
 		control_start_time_ + duration, Vector3d::Zero(), Vector3d::Zero(), rotation_init_, rotation);
 
-	for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired position을 구한다.
+	// desired position
+	for (int i = 0; i < 3; i++)
 	{
-		x_cubic(i) = DyrosMath::cubic(play_time_, control_start_time_,
+		x_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,
 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
 	}
 
-	// 현재 시간에 맞는 desired ratation을 구한다.
-	Matrix3d rotation_cubic = DyrosMath::rotationCubic(play_time_, control_start_time_,
+	// desired orientation
+	Matrix3d rotation_desired = DyrosMath::rotationCubic(play_time_, control_start_time_,
 		control_start_time_ + duration, rotation_init_, rotation);
 	//---------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------
-	// 그 다음 계산한 값들을 기반으로 CLIK control을 진행한다.
-	// 여기서 현재 jacobian과 end-effector의 pose는 실시간으로 받아온다.
+	// After calcuate desired pose and velocity, 
+	// calculate desired joint velocity by Closed Loop Inverse Kinematic (CLIK).
 
-	// Feedback control을 위해 pose에 대한 error를 구한다.
-	x_error.segment<3>(0) = x_cubic - CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 1], com_position_[DOF - 1], false);
-	x_error.segment<3>(3) = DyrosMath::getPhi(rotation_, rotation_cubic);
+	// error of pose 
+	Vector6d x_error;
+	x_error.head(3) = x_desired - CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 1], com_position_[DOF - 1], false);
+	x_error.tail(3) = DyrosMath::getPhi(CalcBodyWorldOrientation(*model_, q_desired_, body_id_[DOF - 1], false).transpose(), rotation_desired);
 
-	// Feedback gain 설정
+	// Set feedback gain 
 	Vector6d kp_diag;
-	kp_diag << 100, 100, 100, 10, 10, 10;
+	kp_diag << 50, 50, 50, 10, 10, 10;
 	Matrix6d kp = kp_diag.asDiagonal();
 
-	// Weighted Matrix 설정
+	// Set weighted matrix 
 	Vector7d w_inv;
-	w_inv << 1.0, 1.0, 1.0, 0.01, 1.0, 1.0, 1.0;
+	w_inv << 1.0, 1.0, 1.0, 0.001, 1.0, 1.0, 1.0;
 	Matrix7d W_inv = w_inv.asDiagonal();
 
-	// joint 값 계산 (CLIK)
+	// desired joint velocity and joint position
+	// Get jacobian from desired joint value, not current joint value
 	Matrix<double, 6, 7> j_qd = jacobianFromqd(0);
 	Vector7d qd_desired = W_inv * j_qd.transpose() * (j_qd*W_inv*j_qd.transpose()).inverse() * ( xd_desired + kp * x_error );
-	q_desired_ = q_desired_ + qd_desired / hz_; // q_desired_는 실시간으로 로봇으로 보내진다.
+	q_desired_ = q_desired_ + qd_desired / hz_; 
 	// ----------------------------------------------------------------------------
 
 	// ----------------------------------------------------------------------------
-	// 데이터 저장
-	recordHW2(6, duration, x_cubic, xd_desired);
+	// Save data
+	// [ current position, desired position, joint position ]
+	recordHW2(6, duration, x_desired);
 	// ----------------------------------------------------------------------------
 }
 
 void ArmController::hw_3_1(const Vector6d & target_x, double duration)
 {
 	//------------------------------------------------------------------------
-	// 먼저 주어진 data (최종 목표 pose, 도달 시간)을 통해 현재 시간에 맞는 desired position과 
-	// desired velocity를 구한다.
-	// 여기서 초기 pose는 주어진 상태이고, 초기와 최종 velocity는 0으로 가정한다.
-	// 주어진 pose는 end-effector의 position과 4번 link의 COM position이다.
+	// Firstly, calculate desired pose and velocity ( end-effector ) for current time
+	// by given data ( target pose, duration ).
+	// Initial pose is given, initial and final velocity are zero.
+	// The velocity and position of x are of end-effector and COM of link 4.
 
-	Vector6d xd_desired, x_cubic, x_error;
+	Vector6d xd_desired, x_desired; // end-effector, COM of link 4
 
-	for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired linear velocity를 구한다.
+	for (int i = 0; i < 3; i++) // Desired linear velocity
 	{
 		xd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,   // End-effector
 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);  
@@ -694,56 +718,58 @@ void ArmController::hw_3_1(const Vector6d & target_x, double duration)
 			control_start_time_ + duration, x_2_init_(i), target_x(i+3), 0, 0);
 	}
 
-	for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired position을 구한다.
+	for (int i = 0; i < 3; i++) // Desired position
 	{
-		x_cubic(i) = DyrosMath::cubic(play_time_, control_start_time_,      // End-effector
+		x_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,      // End-effector
 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
-		x_cubic(i+3) = DyrosMath::cubic(play_time_, control_start_time_,    // COM of Link 4 
+		x_desired(i+3) = DyrosMath::cubic(play_time_, control_start_time_,    // COM of Link 4 
 			control_start_time_ + duration, x_2_init_(i), target_x(i+3), 0, 0);	
 			
 	}
 	//---------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------
-	// 그 다음 계산한 값들을 기반으로 CLIK control을 진행한다.
-	// 여기서 현재 jacobian과 end-effector, link4의 pose는 q_desired_를 통해 얻어진 값으로 받아온다.
+	// After calcuate desired pose and velocity, 
+	// calculate desired joint velocity by Closed Loop Inverse Kinematic (CLIK).
 
-	// Feedback control을 위해 pose에 대한 error를 구한다.
-	Vector6d x_qd;
-	x_qd << CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 1], com_position_[DOF - 1], false),
-			CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 4], com_position_[DOF - 4], false);
-	
-	x_error = x_cubic - x_qd;
+	// error position
+	Vector6d x_qd, x_error;
+	// position(EEF, COM) from desired joint position
+	x_qd << CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 1], com_position_[DOF - 1], false),  // End-effector
+			CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 4], com_position_[DOF - 4], false);  // COM of Link
+	x_error = x_desired - x_qd;
 
-	// Feedback gain 설정
+	// Feedback gain
 	Vector6d kp_diag;
 	kp_diag =100*Vector6d::Ones();
 	Matrix6d kp = kp_diag.asDiagonal();
 
-	// joint 값 계산 (CLIK)
+	// desired joint velocity and joint position
+	// Get jacobian from desired joint value, not current joint value
 	Matrix<double, 6, 7> j_qd;
 	j_qd << jacobianFromqd(0).block <3, DOF>(0, 0), jacobianFromqd(1).block < 3, DOF>(0, 0);
 	Vector7d qd_desired = j_qd.transpose() * ( j_qd * j_qd.transpose() + 0.01*EYE(6) ).inverse() * ( xd_desired + kp * x_error );
-	q_desired_ = q_desired_ + qd_desired / hz_; // q_desired_는 실시간으로 로봇으로 보내진다.
+	q_desired_ = q_desired_ + qd_desired / hz_;
 	// ----------------------------------------------------------------------------
 
 	// ----------------------------------------------------------------------------
-	// 데이터 저장
-	recordHw3(7, duration, x_cubic, xd_desired);
+	// Save data
+	// [ current position(EEF, COM), desired position(EEF, COM), joint position ]
+	recordHw3(7, duration, x_desired);
 	// ----------------------------------------------------------------------------
 }
 
 void ArmController::hw_3_2(const Vector6d & target_x, double duration)
 {
 	//------------------------------------------------------------------------
-	// 먼저 주어진 data (최종 목표 pose, 도달 시간)을 통해 현재 시간에 맞는 desired position과 
-	// desired velocity를 구한다.
-	// 여기서 초기 pose는 주어진 상태이고, 초기와 최종 velocity는 0으로 가정한다.
-	// 주어진 pose는 end-effector의 position과 4번 link의 COM position이다.
+	// Firstly, calculate desired pose and velocity ( end-effector ) for current time
+	// by given data ( target pose, duration ).
+	// Initial pose is given, initial and final velocity are zero.
+	// The velocity and position of x are of end-effector and COM of link 4.
 
-	Vector6d xd_desired, x_cubic;
+	Vector6d xd_desired, x_desired; // end-effector, COM of link 4
 
-	for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired linear velocity를 구한다.
+	for (int i = 0; i < 3; i++) // Desired linear velocity
 	{
 		xd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,   // End-effector
 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);  
@@ -751,69 +777,71 @@ void ArmController::hw_3_2(const Vector6d & target_x, double duration)
 			control_start_time_ + duration, x_2_init_(i), target_x(i+3), 0, 0);
 	}
 
-	for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired position을 구한다.
+	for (int i = 0; i < 3; i++) // Desired position
 	{
-		x_cubic(i) = DyrosMath::cubic(play_time_, control_start_time_,      // End-effector
+		x_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,      // End-effector
 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
-		x_cubic(i+3) = DyrosMath::cubic(play_time_, control_start_time_,    // COM of Link 4 
+		x_desired(i+3) = DyrosMath::cubic(play_time_, control_start_time_,    // COM of Link 4 
 			control_start_time_ + duration, x_2_init_(i), target_x(i+3), 0, 0);	
 			
 	}
 	//---------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------
-	// 그 다음 계산한 값들을 기반으로 CLIK control with Null space를 진행한다.
-	// 여기서 현재 jacobian과 end-effector, link4의 pose는 q_desired_를 통해 얻어진 값으로 받아온다.
+	// After calcuate desired pose and velocity, 
+	// calculate desired joint velocity by Closed Loop Inverse Kinematic (CLIK) with Null-space.
 
 	Vector6d x_qd, xd_CLIK;
-	x_qd << CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 1], com_position_[DOF - 1], false),
-			CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 4], com_position_[DOF - 4], false);
+	// position(EEF, COM) from desired joint position
+	x_qd << CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 1], com_position_[DOF - 1], false), // End-effector
+			CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 4], com_position_[DOF - 4], false); // COM of Link 4
 
-	// Feedback gain 설정
+	// Feedback gain 
 	Vector3d kp_diag;
 	kp_diag =10*Vector3d::Ones();
 	Matrix3d kp = kp_diag.asDiagonal();	
 
-	// CLIK로 얻어진 x_dot들을 구한다.
-	xd_CLIK.head(3) = xd_desired.head(3) + kp * ( x_cubic.head(3) - x_qd.head(3) ); 
-	xd_CLIK.tail(3) = xd_desired.tail(3) + kp * ( x_cubic.tail(3) - x_qd.tail(3) );
+	// x_dot from CLIK
+	xd_CLIK.head(3) = xd_desired.head(3) + kp * ( x_desired.head(3) - x_qd.head(3) ); 
+	xd_CLIK.tail(3) = xd_desired.tail(3) + kp * ( x_desired.tail(3) - x_qd.tail(3) );
 
-	// Jacobian 및 pseudo-Jacobian 계산
+	// Get Jacobian and pseudo-inverse Jacobian 
+	// Get jacobian from desired joint value, not current joint value
 	Matrix<double, 3, 7> j_qd_1, j_qd_2;
 	Matrix<double, 7, 3>j_pseudo_1, j_pseudo_2;
-	j_qd_1 = jacobianFromqd(0).block <3, DOF>(0, 0);
-	j_qd_2 = jacobianFromqd(1).block <3, DOF>(0, 0);
-	j_pseudo_1 = j_qd_1.transpose() * ( j_qd_1 * j_qd_1.transpose() ).inverse();
-	j_pseudo_2 = j_qd_2.transpose() * ( j_qd_2 * j_qd_2.transpose() ).inverse();
+	j_qd_1 = jacobianFromqd(0).block <3, DOF>(0, 0); // End-effector
+	j_qd_2 = jacobianFromqd(1).block <3, DOF>(0, 0); // COM of Link 4
+	j_pseudo_1 = j_qd_1.transpose() * ( j_qd_1 * j_qd_1.transpose() ).inverse(); // End-effector
+	j_pseudo_2 = j_qd_2.transpose() * ( j_qd_2 * j_qd_2.transpose() ).inverse(); // COM of Link 4
 
-	// Null-space 계산
+	// Null-space
 	Matrix7d Null = EYE(7) - j_pseudo_1 * j_qd_1;
 
-	// qd_desired 계산
+	// desired joint velocity and joint position
 	Vector7d qd_2desired = j_pseudo_2 * ( xd_CLIK.tail(3) - j_qd_2 * j_pseudo_1 * xd_CLIK.head(3) );
 	Vector7d qd_desired  = j_pseudo_1 * xd_CLIK.head(3) + Null * qd_2desired; 
-
-	// joint 값 계산 
-	q_desired_ = q_desired_ + qd_desired / hz_; // q_desired_는 실시간으로 로봇으로 보내진다.
+	q_desired_ = q_desired_ + qd_desired / hz_; 
 	// ----------------------------------------------------------------------------
 
 	// ----------------------------------------------------------------------------
-	// 데이터 저장
-	recordHw3(8, duration, x_cubic, xd_desired);
+	// Save data
+	// [ current position(EEF, COM), desired position(EEF, COM), joint position ]
+	recordHw3(8, duration, x_desired);
 	// ----------------------------------------------------------------------------
 }
 
 void ArmController::hw_3_3(const Vector6d & target_x, double duration, bool isStep)
 {
 	//------------------------------------------------------------------------
-	// 먼저 주어진 data (최종 목표 pose, 도달 시간)을 통해 현재 시간에 맞는 desired position과 
-	// desired velocity를 구한다.
-	// 여기서 초기 pose는 주어진 상태이고, 초기와 최종 velocity는 0으로 가정한다.
-	// 주어진 pose는 end-effector의 position과 4번 link의 COM position이다.
+	//------------------------------------------------------------------------
+	// Firstly, calculate desired pose and velocity ( end-effector ) for current time
+	// by given data ( target pose, duration ).
+	// Initial pose is given, initial and final velocity are zero.
+	// The velocity and position of x are of end-effector and COM of link 4.
 
-	Vector6d xd_desired, x_cubic;
+	Vector6d xd_desired, x_desired; // end-effector, COM of link 4
 
-	for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired linear velocity를 구한다.
+	for (int i = 0; i < 3; i++) // Desired linear velocity
 	{
 		xd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,   // End-effector
 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);  
@@ -821,45 +849,48 @@ void ArmController::hw_3_3(const Vector6d & target_x, double duration, bool isSt
 			control_start_time_ + duration, x_2_init_(i), target_x(i+3), 0, 0);
 	}
 
-	for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired position을 구한다.
+	for (int i = 0; i < 3; i++) // Desired position
 	{
-		x_cubic(i) = DyrosMath::cubic(play_time_, control_start_time_,      // End-effector
+		x_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,      // End-effector
 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
-		x_cubic(i+3) = DyrosMath::cubic(play_time_, control_start_time_,    // COM of Link 4 
+		x_desired(i+3) = DyrosMath::cubic(play_time_, control_start_time_,    // COM of Link 4 
 			control_start_time_ + duration, x_2_init_(i), target_x(i+3), 0, 0);	
 			
 	}
 	//---------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------
-	// 그 다음 계산한 값들을 기반으로 CLIK control with Null space를 진행한다.
+	// After calcuate desired pose and velocity, 
+	// calculate desired joint velocity by Closed Loop Inverse Kinematic (CLIK) 
+	// with Null-space and transition algorithm.
 	
-	// q_desired과 kinematic으로 얻은 end-effector와 link4의 COM을 얻는다.
 	Vector6d x_qd, xd_CLIK;
-	x_qd << CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 1], com_position_[DOF - 1], false),
-			CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 4], com_position_[DOF - 4], false);
+	// position(EEF, COM) from desired joint position
+	x_qd << CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 1], com_position_[DOF - 1], false), // End-effector
+			CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 4], com_position_[DOF - 4], false); // COM of Link 4
 
-	// Feedback gain 설정
+	// Feedback gain 
 	Vector3d kp_diag;
 	kp_diag =10*Vector3d::Ones();
 	Matrix3d kp = kp_diag.asDiagonal();	
 
-	// CLIK로 얻어진 x_dot들을 구한다.
-	xd_CLIK.head(3) = xd_desired.head(3) + kp * ( x_cubic.head(3) - x_qd.head(3) ); 
-	xd_CLIK.tail(3) = xd_desired.tail(3) + kp * ( x_cubic.tail(3) - x_qd.tail(3) );
+	// x_dot from CLIK
+	xd_CLIK.head(3) = xd_desired.head(3) + kp * ( x_desired.head(3) - x_qd.head(3) ); 
+	xd_CLIK.tail(3) = xd_desired.tail(3) + kp * ( x_desired.tail(3) - x_qd.tail(3) );
 
-	// Jacobian 및 pseudo-Jacobian 계산
+	// Get Jacobian and pseudo-inverse Jacobian 
+	// Get jacobian from desired joint value, not current joint value
 	Matrix<double, 3, 7> j_qd_1, j_qd_2;
 	Matrix<double, 7, 3>j_pseudo_1, j_pseudo_2;
-	j_qd_1 = jacobianFromqd(0).block <3, DOF>(0, 0);
-	j_qd_2 = jacobianFromqd(1).block <3, DOF>(0, 0);
-	j_pseudo_1 = j_qd_1.transpose() * ( j_qd_1 * j_qd_1.transpose() ).inverse();
-	j_pseudo_2 = j_qd_2.transpose() * ( j_qd_2 * j_qd_2.transpose() ).inverse();
+	j_qd_1 = jacobianFromqd(0).block <3, DOF>(0, 0); // End-effector
+	j_qd_2 = jacobianFromqd(1).block <3, DOF>(0, 0); // COM of Link 4
+	j_pseudo_1 = j_qd_1.transpose() * ( j_qd_1 * j_qd_1.transpose() ).inverse(); // End-effector
+	j_pseudo_2 = j_qd_2.transpose() * ( j_qd_2 * j_qd_2.transpose() ).inverse(); // COM of Link 4
 
-	// Null-space 계산
+	// Null-space
 	Matrix7d Null = EYE(7) - j_pseudo_1 * j_qd_1;
 
-	// Task transition을 위한 parameter(h)
+	// Parameter for task transition(h)
 	double h_1, h_2;
 	h_1 = 1.0;
 	if(isStep)
@@ -879,16 +910,16 @@ void ArmController::hw_3_3(const Vector6d & target_x, double duration, bool isSt
 	xd_i_1 = h_1 * xd_CLIK.head(3) + (1-h_1) * j_qd_1 *j_pseudo_2 * h_2 * xd_CLIK.tail(3);
 	xd_i_2 = h_2 * xd_CLIK.tail(3) + (1-h_2) * j_qd_2 *j_pseudo_1 * h_1 * xd_CLIK.head(3); 
 
-	// qd_desired 계산
+	// desired joint velocity and joint position
 	Vector7d qd_desired  = j_pseudo_1 * xd_i_1 + Null * j_pseudo_2 * ( xd_i_2 - j_qd_2 * j_pseudo_1 * xd_i_1 ); 
-
-	// joint 값 계산 
-	q_desired_ = q_desired_ + qd_desired / hz_; // q_desired_는 실시간으로 로봇으로 보내진다.
+	q_desired_ = q_desired_ + qd_desired / hz_; 
 	// ----------------------------------------------------------------------------
 
 	// ----------------------------------------------------------------------------
-	// 데이터 저장
-	recordHw3(9, duration, x_cubic, xd_desired);
+	// Save data
+	// [ current position(EEF, COM), desired position(EEF, COM), joint position ]
+	if(isStep) recordHw3(9, duration, x_desired);
+	else recordHw3(10, duration, x_desired);
 	// ----------------------------------------------------------------------------
 }
 
@@ -914,7 +945,7 @@ void ArmController::hw_4_1(const Vector7d &target_q, double duration)
 	torque_desired_ = kp*( q_desired - q_ ) + kv*( qd_desired - qdot_ );
 
 	// record
-	recordHw4(10, duration, q_desired);
+	recordHw4(11, duration, q_desired);
 }
 
 void ArmController::hw_4_2(const Vector7d &target_q, double duration, bool isStep)
@@ -952,7 +983,7 @@ void ArmController::hw_4_2(const Vector7d &target_q, double duration, bool isSte
 	torque_desired_ = ( kp*( q_desired - q_ ) + kv*( qd_desired - qdot_ ) ) + g_;
 
 	// record
-	recordHw4(11, duration, q_desired);
+	recordHw4(12, duration, q_desired);
 }
 
 void ArmController::hw_4_3(const Vector7d &target_q, double duration, bool isStep)
@@ -993,8 +1024,8 @@ void ArmController::hw_4_3(const Vector7d &target_q, double duration, bool isSte
 	torque_desired_ = m_ * ( kp*( q_desired - q_ ) + kv*( qd_desired - qdot_ ) ) + g_;
 
 	// record
-	if(isStep) recordHw4(12, duration, q_desired);
-	else recordHw4(13, duration, q_desired);
+	if(isStep) recordHw4(13, duration, q_desired);
+	else recordHw4(14, duration, q_desired);
 	
 }
 
@@ -1062,8 +1093,8 @@ void ArmController::hw_5_1(const Vector12d &target_x, double duration, bool isSt
 
 	torque_desired_ = j_.transpose() * PseudoKine * control_force + ( EYE(7) - j_.transpose() * GeneralInvJ.transpose() ) * null_torque +  g_;
 
-	if(isStep) recordHw5(14, duration, x_desired, xd_desired);
-	else recordHw5(15, duration, x_desired, xd_desired);
+	if(isStep) recordHw5(15, duration, x_desired, xd_desired);
+	else recordHw5(16, duration, x_desired, xd_desired);
 }
 
 void ArmController::hw_5_2(const Vector12d &target_x, double duration)
@@ -1111,7 +1142,7 @@ void ArmController::hw_5_2(const Vector12d &target_x, double duration)
 
 	torque_desired_ = j_.transpose() * PseudoKine * control_force + ( EYE(7) - j_.transpose() * GeneralInvJ.transpose() ) * null_torque +  g_;
 
-	recordHw5(16, duration, x_desired, xd_desired);
+	recordHw5(17, duration, x_desired, xd_desired);
 }
 
 void ArmController::hw_7(const Vector12d &target_x, double duration)
@@ -1167,7 +1198,7 @@ void ArmController::hw_7(const Vector12d &target_x, double duration)
 
 	torque_desired_ = j_.transpose() * PseudoKine * control_force + ( EYE(7) - j_.transpose() * GeneralInvJ.transpose() ) * null_torque +  g_;
 
-	recordHw5(17, duration, x_desired, xd_desired);
+	recordHw5(18, duration, x_desired, xd_desired);
 }
 
 // Controller Core Methods ----------------------------
