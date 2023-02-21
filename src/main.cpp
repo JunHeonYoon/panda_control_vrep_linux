@@ -52,12 +52,12 @@ int main()
 	while (vb.simConnectionCheck() && !exit_flag)
 	{
 		vb.read();
-		ac.readData(vb.getPosition(), vb.getVelocity());
+		ac.readData(vb.getPosition(), vb.getVelocity(), vb.getGripperPosition(), vb.getFTData());
 		if (is_first)
 		{
 			vb.simLoop();
 			vb.read();
-			ac.readData(vb.getPosition(), vb.getVelocity());
+			ac.readData(vb.getPosition(), vb.getVelocity(), vb.getGripperPosition(), vb.getFTData());
 			cout << "Initial q: " << vb.getPosition().transpose() << endl;
 			is_first = false;
 			ac.initPosition();
@@ -71,6 +71,12 @@ int main()
 				// Implement with user input
 			case 'i':
 				ac.setMode("joint_ctrl_init");
+				break;
+			case 'o':
+				ac.setMode("gripper_open");
+				break;
+			case 'c':
+				ac.setMode("gripper_close");
 				break;
 			// case 'h':
 			// 	ac.setMode("joint_ctrl_home");
@@ -146,6 +152,7 @@ int main()
 			ac.compute();
 			vb.setDesiredPosition(ac.getDesiredPosition());
 			vb.setDesiredTorque(ac.getDesiredTorque());
+			vb.setGripperDesiredPosition(ac.getDesiredGripperPosition());
 		
 			vb.write();
 			vb.simLoop();

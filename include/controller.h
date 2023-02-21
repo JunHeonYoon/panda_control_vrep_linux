@@ -20,6 +20,7 @@ class ArmController
 	// Initial state
 	Vector7d q_init_;
 	Vector7d qdot_init_;
+	Vector2d gq_init_; // for gripper
 
 	// Current state
 	Vector7d q_;
@@ -27,10 +28,13 @@ class ArmController
 	Vector7d qddot_;
 	Vector7d torque_;
 	Vector7d q_error_sum_;
+	Vector2d gq_;
+	Vector6d tip_ft_; // FT sensor data (force, torque)
 
 	// Control value (position controlled)
 	Vector7d q_desired_; // Control value
 	Vector7d torque_desired_;
+	Vector2d gq_desired_;
 
 	// Task space
 	Vector3d x_init_;
@@ -96,6 +100,7 @@ private:
 	void printState();
 	void moveJointPosition(const Vector7d &target_position, double duration);
 	void moveJointPositionTorque(const Vector7d &target_position, double duration);
+	void moveGripperPosition(const Vector2d &target_position, double duration);
 	void simpleJacobianControl(const Vector12d &target_x, double duration);
 	void feedbackJacobianControl(const Vector12d & target_x, double duration);
 	void CLIK(const Vector12d & target_x, double duration);
@@ -116,8 +121,11 @@ private:
 public:
 	void readData(const Vector7d &position, const Vector7d &velocity, const Vector7d &torque);
 	void readData(const Vector7d &position, const Vector7d &velocity);
+	void readData(const Vector7d &position, const Vector7d &velocity, const Vector2d &gripper_position, const Vector6d &tip_ft);
 	const Vector7d & getDesiredPosition();
 	const Vector7d & getDesiredTorque();
+	const Vector2d & getDesiredGripperPosition();
+	const Vector6d & getFTSensorData();
 
 public:
 		ArmController(double hz) :

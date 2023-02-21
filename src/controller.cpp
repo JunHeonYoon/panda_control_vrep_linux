@@ -93,6 +93,7 @@ void ArmController::compute()
 		q_init_ = q_;
 		qdot_init_ = qdot_;
 		q_error_sum_.setZero();
+		gq_init_ = gq_;
 
 		x_init_ = x_;
 		x_2_init_ = x_2_;
@@ -114,7 +115,20 @@ void ArmController::compute()
 		// target_position << 0.0, 0.0, 0.0, -M_PI / 6., 0.0, M_PI / 2, 0;
 		// target_position << 0.0, -M_PI / 3, 0.0, -M_PI / 2., 0.0, M_PI / 6, 0;
 		// moveJointPositionTorque(target_position, 1.0);     
-		moveJointPosition(target_position, 1.0);                
+		moveJointPosition(target_position, 1.0);         
+
+	}
+	else if(control_mode_ == "gripper_open")
+	{ 
+		Vector2d target_gripper_position;
+		target_gripper_position << 2.5*M_PI/180,2.5*M_PI/180;
+		moveGripperPosition(target_gripper_position, 1);  
+	}
+	else if(control_mode_ == "gripper_close")
+	{ 
+		Vector2d target_gripper_position;
+		target_gripper_position << 0, 0;
+		moveGripperPosition(target_gripper_position, 1);  
 	}
 	else if (control_mode_ == "simple_jacobian")
 	{
@@ -324,6 +338,7 @@ void ArmController::printState()
 	{
 		DBG_CNT = 0;
 
+		cout << "-------------------------------------------------------" << endl;
 		cout << "time     : " << std::fixed << std::setprecision(3) << play_time_ << endl;
 		cout << "q now    :\t";
 		cout << std::fixed << std::setprecision(3) << q_.transpose() << endl;
@@ -333,6 +348,12 @@ void ArmController::printState()
 		cout << x_.transpose() << endl;
 		cout << "R        :\t" << endl;
 		cout << std::fixed << std::setprecision(3) << rotation_ << endl;
+		cout << "gripper now    :\t";
+		cout << std::fixed << std::setprecision(3) << gq_.transpose() << endl;
+		cout << "gripper desired:\t";
+		cout << std::fixed << std::setprecision(3) << gq_desired_.transpose() << endl;
+		cout << "FT data:\t";
+		cout << std::fixed << std::setprecision(3) << tip_ft_.transpose() << endl;
 		
 		if(control_mode_ == "hw_3_1")
 		{
@@ -348,6 +369,7 @@ void ArmController::printState()
 
 			cout << "hw 3-1 x:\t" << x.transpose() << endl;
 		}
+		cout << "-------------------------------------------------------" << endl;
 		
 	}
 }
@@ -359,6 +381,15 @@ void ArmController::moveJointPosition(const Vector7d & target_position, double d
 	q_desired_ = DyrosMath::cubicVector<7>(play_time_,
 		control_start_time_,
 		control_start_time_ + duration, q_init_, target_position, zero_vector, zero_vector);
+}
+
+void ArmController::moveGripperPosition(const Vector2d & target_position, double duration)
+{
+	Vector2d zero_vector;
+	zero_vector.setZero();
+	gq_desired_ = DyrosMath::cubicVector<2>(play_time_,
+		control_start_time_,
+		control_start_time_ + duration, gq_init_, target_position, zero_vector, zero_vector);
 }
 
 void ArmController::moveJointPositionTorque(const Vector7d &target_position, double duration)
@@ -1220,6 +1251,7 @@ void ArmController::initDimension()
 	x_target_.setZero();
 	q_desired_.setZero();
 	torque_desired_.setZero();
+	gq_desired_.setZero();
 
 	g_temp_.resize(DOF);
 	m_temp_.resize(DOF, DOF);
@@ -1319,6 +1351,24 @@ void ArmController::readData(const Vector7d &position, const Vector7d &velocity)
 		torque_(i) = 0;
 	}
 }
+void ArmController::readData(const Vector7d &position, const Vector7d &velocity, const Vector2d &gripper_position, const Vector6d &tip_ft)
+{
+	for (size_t i = 0; i < dof_; i++)
+	{
+		q_(i) = position(i);
+		qdot_(i) = velocity(i);
+		torque_(i) = 0;
+	}
+	for (size_t i = 0; i < 2; i++)
+	{
+		gq_(i) = gripper_position(i);
+	}
+	for (size_t i = 0; i < 6; i++)
+	{
+		tip_ft_(i) = tip_ft(i);
+	}
+
+}
 
 const Vector7d & ArmController::getDesiredPosition()
 {
@@ -1330,12 +1380,22 @@ const Vector7d & ArmController::getDesiredTorque()
 	return torque_desired_;
 }
 
+const Vector2d & ArmController::getDesiredGripperPosition()
+{
+	return gq_desired_;
+}
 
+const Vector6d & ArmController::getFTSensorData()
+{
+	return tip_ft_;
+}
 
 void ArmController::initPosition()
 {
     q_init_ = q_;
     q_desired_ = q_init_;
+	gq_init_ = gq_;
+	gq_desired_ = gq_init_;
 }
 
 // ----------------------------------------------------

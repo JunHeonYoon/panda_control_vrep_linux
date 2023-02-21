@@ -86,6 +86,8 @@ void VRepBridge::write()
 		{
 			simxSetJointTargetPosition(clientID_, motorHandle_[i], desired_q_(i), simx_opmode_streaming);
 		}
+		simxSetJointTargetPosition(clientID_, gripperHandle_[0], desired_gq_(0), simx_opmode_streaming);
+		simxSetJointTargetPosition(clientID_, gripperHandle_[1], desired_gq_(1), simx_opmode_streaming);
 		break;
 	}
 	case CTRL_TORQUE:
@@ -103,6 +105,8 @@ void VRepBridge::write()
 			simxSetJointForce(clientID_, motorHandle_[i], static_cast<float>(abs(desired_torque_(i))), simx_opmode_streaming);
 
 		}
+		// simxSetJointTargetPosition(clientID_, gripperHandle_[0], desired_gq_(0), simx_opmode_streaming);
+		// simxSetJointTargetPosition(clientID_, gripperHandle_[1], desired_gq_(1), simx_opmode_streaming);
 		break;
 	}
 	}
@@ -117,11 +121,32 @@ void VRepBridge::read()
 		simxGetObjectFloatParameter(clientID_, motorHandle_[i], 2012, &data, simx_opmode_streaming);
 		current_q_dot_(i) = data;
 	}
+	for (size_t i = 0; i < 2; i++)
+	{  
+		simxFloat data;
+		simxGetJointPosition(clientID_, gripperHandle_[i], &data, simx_opmode_streaming);
+		current_gq_(i) = data;
+	}
+
+	float force[3];
+	float torque[3];
+	simxUChar state;
+	simxReadForceSensor(clientID_, sensorHandle_, &state, force, torque, simx_opmode_streaming);
+	for (int i = 0; i < 3; i++)
+	{
+		current_ft_[i] = force[i];
+		current_ft_[i+3] = torque[i];
+	}
 }
 
 void VRepBridge::setDesiredPosition(const Eigen::Matrix<double, DOF, 1>& desired_q)
 {
 	desired_q_ = desired_q;
+}
+
+void VRepBridge::setGripperDesiredPosition(const Eigen::Matrix<double, 2, 1> & desired_gq)
+{
+	desired_gq_ = desired_gq;
 }
 
 void VRepBridge::setDesiredTorque(const Eigen::Matrix<double, DOF, 1>& desired_torque)
@@ -139,6 +164,16 @@ const Eigen::Matrix<double, DOF, 1>& VRepBridge::getVelocity()
 	return current_q_dot_;
 }
 
+const Eigen::Matrix<double, 2, 1> & VRepBridge::getGripperPosition()
+{
+	return current_gq_;
+}
+
+const Eigen::Matrix<double, 6, 1> & VRepBridge::getFTData()
+{
+	return current_ft_;
+}
+
 
 void VRepBridge::getHandle()
 {
@@ -149,5 +184,14 @@ void VRepBridge::getHandle()
 		cout << "[INFO] Getting a handle named " << joint_name << endl;
 		simxErrorCheck(simxGetObjectHandle(clientID_, joint_name.c_str(), &motorHandle_[i], simx_opmode_oneshot_wait));
 	}
+	for (int i = 0; i < 2; i++)
+	{
+		const string joint_name = GRIPPER_HANDLE_PREFIX + std::to_string(i + 1);
+		cout << "[INFO] Getting a handle named " << joint_name << endl;
+		simxErrorCheck(simxGetObjectHandle(clientID_, joint_name.c_str(), &gripperHandle_[i], simx_opmode_oneshot_wait));
+	}
+	cout << "[INFO] Getting a handle named " << SENSOR_HANDLE_PREFIX << endl;
+	simxErrorCheck(simxGetObjectHandle(clientID_, SENSOR_HANDLE_PREFIX.c_str(), &sensorHandle_, simx_opmode_oneshot_wait));
+	
 	cout << "[INFO] The handle has been imported." << endl;
 }
