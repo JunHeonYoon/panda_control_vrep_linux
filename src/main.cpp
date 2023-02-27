@@ -52,12 +52,14 @@ int main()
 	while (vb.simConnectionCheck() && !exit_flag)
 	{
 		vb.read();
-		ac.readData(vb.getPosition(), vb.getVelocity(), vb.getGripperPosition(), vb.getFTData());
+		// ac.readData(vb.getPosition(), vb.getVelocity(), vb.getGripperPosition(), vb.getFTData());
+		ac.readData(vb.getPosition(), vb.getVelocity(), vb.getGripperPosition(), vb.getGripperVelocity(), vb.getGripperForce(), vb.getFTData());
 		if (is_first)
 		{
 			vb.simLoop();
 			vb.read();
-			ac.readData(vb.getPosition(), vb.getVelocity(), vb.getGripperPosition(), vb.getFTData());
+			// ac.readData(vb.getPosition(), vb.getVelocity(), vb.getGripperPosition(), vb.getFTData());
+			ac.readData(vb.getPosition(), vb.getVelocity(), vb.getGripperPosition(), vb.getGripperVelocity(), vb.getGripperForce(), vb.getFTData());
 			cout << "Initial q: " << vb.getPosition().transpose() << endl;
 			is_first = false;
 			ac.initPosition();
@@ -78,9 +80,12 @@ int main()
 			case 'c':
 				ac.setMode("gripper_close");
 				break;
+			case 'p':
+				ac.setMode("pick_obstacle");
+				break;
 			// case 'h':
 			// 	ac.setMode("joint_ctrl_home");
-			// 	break;
+			// 	break;Position
 			// case 't':
 			// 	ac.setMode("torque_ctrl_dynamic");
 			// 	break;
@@ -93,24 +98,24 @@ int main()
 			// case '3':
 			// 	ac.setMode("CLIK");
 			// 	break;
-			case '1':
-				ac.setMode("hw_2_1");
-				break;
-			case '2':
-				ac.setMode("hw_2_2");
-				break;
-			case '3':
-				ac.setMode("hw_2_3");
-				break;
-			case '4':
-				ac.setMode("hw_3_1");
-				break;	
-			case '5':
-				ac.setMode("hw_3_2");
-				break;		
-			case '6':
-				ac.setMode("hw_3_3");
-				break;			
+			// case '1':
+			// 	ac.setMode("hw_2_1");
+			// 	break;
+			// case '2':
+			// 	ac.setMode("hw_2_2");
+			// 	break;
+			// case '3':Position
+			// 	ac.setMode("hw_2_3");
+			// 	break;
+			// case '4':
+			// 	ac.setMode("hw_3_1");
+			// 	break;	
+			// case '5':
+			// 	ac.setMode("hw_3_2");
+			// 	break;		
+			// case '6':
+			// 	ac.setMode("hw_3_3");
+			// 	break;			
 			// case '1':
 			// 	ac.setMode("hw_4_1");
 			// 	break;
@@ -152,7 +157,8 @@ int main()
 			ac.compute();
 			vb.setDesiredPosition(ac.getDesiredPosition());
 			vb.setDesiredTorque(ac.getDesiredTorque());
-			vb.setGripperDesiredPosition(ac.getDesiredGripperPosition());
+			// vb.setGripperDesiredPosition(ac.getDesiredGripperPosition());
+			vb.setGripperDesiredForce(ac.getDesiredGripperForce());
 		
 			vb.write();
 			vb.simLoop();

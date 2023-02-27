@@ -30,11 +30,14 @@ public:
 	void read();
 
 	void setDesiredPosition(const Eigen::Matrix<double, DOF, 1> & desired_q);
-	void setGripperDesiredPosition(const Eigen::Matrix<double, 2, 1> & desired_gq);
+	// void setGripperDesiredPosition(const Eigen::Matrix<double, 2, 1> & desired_gq);
+	void setGripperDesiredForce(const Eigen::Matrix<double, 2, 1> & desired_gforce);
 	void setDesiredTorque(const Eigen::Matrix<double, DOF, 1> & desired_torque);
 	const Eigen::Matrix<double, DOF, 1> & getPosition();
 	const Eigen::Matrix<double, DOF, 1> & getVelocity();
 	const Eigen::Matrix<double, 2, 1> & getGripperPosition();
+	const Eigen::Matrix<double, 2, 1> & getGripperVelocity();
+	const Eigen::Matrix<double, 2, 1> & getGripperForce();
 	const Eigen::Matrix<double, 6, 1> & getFTData();
 
 	const size_t getTick() { return tick_; }
@@ -45,7 +48,9 @@ private:
 	Eigen::Matrix<double, DOF, 1> desired_q_;
 	Eigen::Matrix<double, DOF, 1> desired_torque_;
 	Eigen::Matrix<double, 2, 1> current_gq_;
-	Eigen::Matrix<double, 2, 1> desired_gq_;
+	Eigen::Matrix<double, 2, 1> current_gq_dot_;
+	Eigen::Matrix<double, 2, 1> current_gforce_;
+	Eigen::Matrix<double, 2, 1> desired_gforce_;
 	Eigen::Matrix<double, 6, 1> current_ft_;
 
 	simxInt clientID_;
