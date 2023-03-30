@@ -72,39 +72,27 @@ int main()
 			case 'i':
 				ac.setMode("joint_ctrl_init");
 				break;
-			// case 'h':
-			// 	ac.setMode("joint_ctrl_home");
-			// 	break;
-			// case 't':
-			// 	ac.setMode("torque_ctrl_dynamic");
-			// 	break;
-			// case '1':
-			// 	ac.setMode("simple_jacobian");
-			// 	break;
-			// case '2':
-			// 	ac.setMode("feedback_jacobian");
-			// 	break;
-			// case '3':
-			// 	ac.setMode("CLIK");
-			// 	break;
+			case 'h':
+				ac.setMode("joint_ctrl_home");
+				break;
 			case '1':
-				ac.setMode("hw_2_1");
+				ac.setMode("hw_3_1");
 				break;
 			case '2':
-				ac.setMode("hw_2_2");
+				ac.setMode("hw_3_2");
 				break;
 			case '3':
-				ac.setMode("hw_2_3");
+				ac.setMode("hw_3_3");
 				break;
 			case '4':
-				ac.setMode("hw_3_1");
+				ac.setMode("hw_3_4");
 				break;	
-			case '5':
-				ac.setMode("hw_3_2");
-				break;		
-			case '6':
-				ac.setMode("hw_3_3");
-				break;			
+			// case '5':
+			// 	ac.setMode("hw_3_2");
+			// 	break;		
+			// case '6':
+			// 	ac.setMode("hw_3_3");
+			// 	break;			
 			// case '1':
 			// 	ac.setMode("hw_4_1");
 			// 	break;

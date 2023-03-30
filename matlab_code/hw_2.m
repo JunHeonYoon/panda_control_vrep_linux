@@ -14,7 +14,7 @@ headerlineIn = 0;
 
 if hw_2_1
     data1 = importdata(file_name1, delimiterIn, headerlineIn);
-    data1 = data1(1:200, :);
+    data1 = data1(1:200, :);    
     t1 = length(data1);
     time1 = 0.01*(1:t1);
     hw2_plot(data1, time1)
