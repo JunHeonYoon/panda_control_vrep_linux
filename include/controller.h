@@ -100,16 +100,17 @@ private:
 	void hw_3_2(const Vector12d & target_x, double duration);
 	void hw_3_3(const Vector12d & target_x, double duration);
 	void hw_3_4(const Vector12d & target_x, double duration);
-	// void hw_3_1(const Vector6d & target_x, double duration);
-	// void hw_3_2(const Vector6d & target_x, double duration);
-	// void hw_3_3(const Vector6d & target_x, double duration, bool isStep);
-	// void hw_4_1(const Vector7d & target_q, double duration);
-	// void hw_4_2(const Vector7d & target_q, double duration, bool isStep);
-	// void hw_4_3(const Vector7d & target_q, double duration, bool isStep);
-	// void hw_5_1(const Vector12d & target_x, double duration, bool isStep);
-	// void hw_5_2(const Vector12d & target_x, double duration);
-	// void hw_7(const Vector12d & target_x, double duration);
-
+	void hw_4_1(const Vector6d & target_x, double duration);
+	void hw_4_2(const Vector6d & target_x, double duration);
+	void hw_5_1(const Vector7d & target_q, double duration);
+	void hw_5_2_1(const Vector7d & target_q, double duration);
+	void hw_5_2_2(const Vector7d & target_q, double duration);
+	void hw_5_3_1(const Vector7d & target_q, double duration);
+	void hw_5_3_2(const Vector7d & target_q, double duration);
+	void hw_6_1_1(const Vector12d & target_x, double duration);
+	void hw_6_1_2(const Vector12d & target_x, double duration);
+	void hw_6_2_1(const Vector12d & target_x, double duration);
+	void hw_6_2_2(const Vector12d & target_x, double duration);
 
 public:
 	void readData(const Vector7d &position, const Vector7d &velocity, const Vector7d &torque);
@@ -136,12 +137,15 @@ private:
 	constexpr static int NUM_HW_PLOT{20};
 	ofstream hw_plot_files_[NUM_HW_PLOT];
 	const string hw_plot_file_names_[NUM_HW_PLOT]
-	{ "hw_3_1", "hw_3_2", "hw_3_3", "hw_3_4"};
+	{ "hw_3_1", "hw_3_2", "hw_3_3", "hw_3_4",
+	  "hw_4_1", "hw_4_2",
+	  "hw_5_1", "hw_5_2_1", "hw_5_2_2", "hw_5_3_1", "hw_5_3_2",
+	  "hw_6_1_1", "hw_6_1_2", "hw_6_2_1", "hw_6_2_2"};
 
 	// void record(int file_number, double duration);
 	// void record(int file_number, double duration, const stringstream & ss);
 	void recordHW3(int file_number, double duration, const Vector3d & x_desired, const Matrix3d & rotation_desired);
-	// void recordHw3(int file_number, double duration, const Vector6d & x_desired);
-	// void recordHw4(int file_number, double duration, const Vector7d & q_desired);
-	// void recordHw5(int file_number, double duration, const Vector3d & x_desired, const Vector6d & xd_desired);
+	void recordHw4(int file_number, double duration, const Vector6d & x_desired);
+	void recordHw5(int file_number, double duration, const Vector7d & q_desired);
+	// void recordHW6(int file_number, double duration, const Vector3d & x_desired, const Matrix3d & rotation_desired);
 };

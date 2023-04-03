@@ -104,17 +104,16 @@ void ArmController::compute()
 	{
 		Vector7d target_position;
 		target_position << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, M_PI / 4;
-		// moveJointPositionTorque(target_position, 1.0);
-		moveJointPosition(target_position, 1.0);
+		moveJointPositionTorque(target_position, 1.0);
+		// moveJointPosition(target_position, 1.0);
 	}
 	else if(control_mode_ == "joint_ctrl_init")
 	{
 		Vector7d target_position;
 		target_position << 0.0, 0.0, 0.0, -M_PI / 2., 0.0, M_PI / 2, 0;
 		// target_position << 0.0, 0.0, 0.0, -M_PI / 6., 0.0, M_PI / 2, 0;
-		// target_position << 0.0, -M_PI / 3, 0.0, -M_PI / 2., 0.0, M_PI / 6, 0;
-		// moveJointPositionTorque(target_position, 1.0);     
-		moveJointPosition(target_position, 1.0);                
+		moveJointPositionTorque(target_position, 1.0);     
+		// moveJointPosition(target_position, 1.0);                
 	}
 	else if (control_mode_ == "hw_3_1")
 	{
@@ -152,68 +151,77 @@ void ArmController::compute()
 					0, 0, -1;
 		hw_3_4(target_x, 4.0);
 	}
-	// else if (control_mode_ == "hw_3_1")
-	// {
-	// 	Vector6d target_x;
-	// 	target_x << 0.25,  0.28, 0.65,
-	// 				0.00, -0.15, 0.60;
-	// 	hw_3_1(target_x, 4.0);
-	// }
-	// else if (control_mode_ == "hw_3_2")
-	// {
-	// 	Vector6d target_x;
-	// 	target_x << 0.25,  0.28, 0.65,
-	// 				0.00, -0.15, 0.60;
-	// 	hw_3_2(target_x, 4.0);
-	// }
-	// else if (control_mode_ == "hw_3_3")
-	// {
-	// 	Vector6d target_x;
-	// 	target_x << 0.25,  0.28, 0.65,
-	// 				0.00, -0.15, 0.60;
-	// 	hw_3_3(target_x, 4.0, false); // true : hw_3_3_1, false : hw_3_3_2
-	// }
-	// else if (control_mode_ == "hw_4_1")
-	// {
-	// 	Vector7d target_q;
-	// 	target_q << 0.0, 0.0, 0.0, -M_PI*(25./180.), 0.0, M_PI / 2, 0; 
-	// 	hw_4_1(target_q, 4.0);
-	// }
-	// else if (control_mode_ == "hw_4_2")
-	// {
-	// 	Vector7d target_q;
-	// 	// target_q << 0.0, 0.0, 0.0, -M_PI*(25./180.), 0.0, M_PI / 2, 0;
-	// 	target_q << 0.0, 0.0, 0.0, -M_PI/3., 0.0, M_PI / 2, 0; 
-	// 	hw_4_2(target_q, 4.0, false);
-	// }
-	// else if (control_mode_ == "hw_4_3")
-	// {
-	// 	Vector7d target_q;
-	// 	target_q << 0.0, 0.0, 0.0, -M_PI*(25./180.), 0.0, M_PI / 2, 0;
-	// 	// target_q << 0.0, 0.0, 0.0, -M_PI/3., 0.0, M_PI / 2, 0; 
-	// 	hw_4_3(target_q, 4.0, true);
-	// }
-	// else if (control_mode_ == "hw_5_1")
+	else if (control_mode_ == "hw_4_1")
+	{
+		Vector6d target_x;
+		target_x << 0.25,  0.28, 0.65, // for end-effector
+					0.00, -0.15, 0.60; // for link4
+		hw_4_1(target_x, 4.0);
+	}
+	else if (control_mode_ == "hw_4_2")
+	{
+		Vector6d target_x;
+		target_x << 0.25,  0.28, 0.65, // for end-effector
+					0.00, -0.15, 0.60; // for link4
+		hw_4_2(target_x, 4.0);
+	}
+	else if (control_mode_ == "hw_5_1")
+	{
+		Vector7d target_q;
+		target_q << 0.0, 0.0, 0.0, -M_PI*(25./180.), 0.0, M_PI / 2, 0; 
+		hw_5_1(target_q, 4.0);
+	}
+	else if (control_mode_ == "hw_5_2_1")
+	{
+		Vector7d target_q;
+		target_q << 0.0, 0.0, 0.0, -M_PI*(25./180.), 0.0, M_PI / 2, 0; 
+		hw_5_2_1(target_q, 4.0);
+	}
+	else if (control_mode_ == "hw_5_2_2")
+	{
+		Vector7d target_q;
+		target_q << 0.0, 0.0, 0.0, -M_PI/3., 0.0, M_PI / 2, 0; 
+		hw_5_2_2(target_q, 4.0);
+	}
+	else if (control_mode_ == "hw_5_3_1")
+	{
+		Vector7d target_q;
+		target_q << 0.0, 0.0, 0.0, -M_PI*(25./180.), 0.0, M_PI / 2, 0;
+		hw_5_3_1(target_q, 4.0);
+	}
+	else if (control_mode_ == "hw_5_3_2")
+	{
+		Vector7d target_q;
+		target_q << 0.0, 0.0, 0.0, -M_PI/3., 0.0, M_PI / 2, 0; 
+		hw_5_3_2(target_q, 4.0);
+	}
+	// else if (control_mode_ == "hw_6_1_1")
 	// {
 	// 	Vector12d target_x;
 	// 	target_x << x_init_, rotation_init_.col(0), rotation_init_.col(1), rotation_init_.col(2);
-	// 	// target_x(1) += 0.02;
+	// 	target_x(1) += 0.02;
+	// 	hw_6_1_1(target_x, 4.0);
+	// }
+	// else if (control_mode_ == "hw_6_1_2")
+	// {
+	// 	Vector12d target_x;
+	// 	target_x << x_init_, rotation_init_.col(0), rotation_init_.col(1), rotation_init_.col(2);
 	// 	target_x(1) += 0.1; 
-	// 	hw_5_1(target_x, 4.0, false);
+	// 	hw_6_1_2(target_x, 4.0);
 	// }
-	// else if (control_mode_ == "hw_5_2")
+	// else if (control_mode_ == "hw_6_2_1")
 	// {
 	// 	Vector12d target_x;
-	// 	target_x << 0.3, -0.012, 0.52,
-	// 			rotation_init_.col(0), rotation_init_.col(1), rotation_init_.col(2);
-	// 	hw_5_2(target_x, 4.0);
+	// 	target_x << x_init_, rotation_init_.col(0), rotation_init_.col(1), rotation_init_.col(2);
+	// 	target_x(1) += 0.02;
+	// 	hw_6_2_1(target_x, 4.0);
 	// }
-	// else if (control_mode_ == "hw_7")
+	// else if (control_mode_ == "hw_6_2_2")
 	// {
 	// 	Vector12d target_x;
-	// 	target_x << 0.3, -0.012, 0.52,
-	// 			rotation_init_.col(0), rotation_init_.col(1), rotation_init_.col(2);
-	// 	hw_7(target_x, 8.0);
+	// 	target_x << x_init_, rotation_init_.col(0), rotation_init_.col(1), rotation_init_.col(2);
+	// 	target_x(1) += 0.1; 
+	// 	hw_6_2_2(target_x, 4.0);
 	// }
 	else
 	{
@@ -252,52 +260,46 @@ void ArmController::recordHW3(int file_number, double duration, const Vector3d &
 		<< x_desired.transpose()<< " " << x_.transpose() << " " 
 		<< rotation_desired.col(0).transpose() << " " << rotation_desired.col(1).transpose() << " " << rotation_desired.col(2).transpose() << " "
 		<< rotation_.col(0).transpose() << " " << rotation_.col(1).transpose() << " " << rotation_.col(2).transpose() << " " 
-		<< q_desired_.transpose()
+		<< q_.transpose()
 		<< endl;
 	}
 }
 
-// void ArmController::recordHw3(int file_number, double duration, const Vector6d &x_desired)
+void ArmController::recordHw4(int file_number, double duration, const Vector6d &x_desired)
+{
+	if (play_time_ < control_start_time_ + duration + 1.0)
+	{
+		hw_plot_files_[file_number] 
+		<< x_desired.transpose() <<  " "
+		<< x_.transpose()<< " " << x_2_.transpose()<< " "
+		<< q_.transpose()
+		<< endl;
+	}
+}
+
+void ArmController::recordHw5(int file_number, double duration, const Vector7d & q_desired)
+{
+	if (play_time_ < control_start_time_ + duration + 1.0)
+	{
+		hw_plot_files_[file_number] 
+		<< q_desired.transpose() << " "
+		<< q_.transpose() <<  " "
+		<< endl;
+	}
+}
+
+// void ArmController::recordHW6(int file_number, double duration, const Vector3d & x_desired, const Matrix3d & rotation_desired)
 // {
 // 	if (play_time_ < control_start_time_ + duration + 1.0)
 // 	{
 // 		hw_plot_files_[file_number] 
-// 		<< x_.transpose()<< " " << x_2_.transpose()<< " "
-// 		<< x_desired.transpose() <<  " "
-// 		<< q_desired_.transpose()
+// 		<< x_desired.transpose()<< " " << x_.transpose() << " " 
+// 		<< rotation_desired.col(0).transpose() << " " << rotation_desired.col(1).transpose() << " " << rotation_desired.col(2).transpose() << " "
+// 		<< rotation_.col(0).transpose() << " " << rotation_.col(1).transpose() << " " << rotation_.col(2).transpose() << " " 
+// 		<< q_.transpose()
 // 		<< endl;
 // 	}
 // }
-
-// void ArmController::recordHw4(int file_number, double duration, const Vector7d & q_desired)
-// {
-// 	if (play_time_ < control_start_time_ + duration + 1.0)
-// 	{
-// 		hw_plot_files_[file_number] 
-// 		<< q_desired.transpose() << " "
-// 		<< q_.transpose() <<  " "
-// 		<< torque_desired_.transpose()
-// 		<< endl;
-// 	}
-// 	else if (play_time_ >= control_start_time_ + duration + 1.0)
-// 	{
-// 		cout << "Record end" << endl;
-// 	}
-// }
-
-// void ArmController::recordHw5(int file_number, double duration, const Vector3d & x_desired, const Vector6d & xd_desired)
-// {
-// 	if (play_time_ < control_start_time_ + duration + 1.0)
-// 	{
-// 		hw_plot_files_[file_number] 
-// 		<< x_.transpose()<< " " 
-// 		<< x_desired.transpose() <<  " "
-// 		<< xd_desired.transpose() << " "
-// 		<< x_dot_.transpose()
-// 		<< endl;
-// 	}
-// }
-
 
 void ArmController::printState()
 {
@@ -623,506 +625,400 @@ void ArmController::hw_3_4(const Vector12d & target_x, double duration)
 	// ----------------------------------------------------------------------------
 }
 
-// void ArmController::hw_3_1(const Vector6d & target_x, double duration)
-// {
-// 	//------------------------------------------------------------------------
-// 	// Firstly, calculate desired pose and velocity ( end-effector ) for current time
-// 	// by given data ( target pose, duration ).
-// 	// Initial pose is given, initial and final velocity are zero.
-// 	// The velocity and position of x are of end-effector and COM of link 4.
+void ArmController::hw_4_1(const Vector6d & target_x, double duration)
+{
+	//------------------------------------------------------------------------
+	// Firstly, calculate desired pose and velocity ( end-effector ) for current time
+	// by given data ( target pose, duration ).
+	// Initial pose is given, initial and final velocity are zero.
+	// The velocity and position of x are of end-effector and COM of link 4.
 
-// 	Vector6d xd_desired, x_desired; // end-effector, COM of link 4
+	Vector6d xd_desired, x_desired; // end-effector, COM of link 4
 
-// 	for (int i = 0; i < 3; i++) // Desired linear velocity
-// 	{
-// 		xd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,   // End-effector
-// 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);  
-// 		xd_desired(i+3) = DyrosMath::cubicDot(play_time_, control_start_time_, // COM of Link 4 
-// 			control_start_time_ + duration, x_2_init_(i), target_x(i+3), 0, 0);
-// 	}
+	for (int i = 0; i < 3; i++) // Desired linear velocity
+	{
+		xd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,   // End-effector
+			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);  
+		xd_desired(i+3) = DyrosMath::cubicDot(play_time_, control_start_time_, // COM of Link 4 
+			control_start_time_ + duration, x_2_init_(i), target_x(i+3), 0, 0);
+	}
 
-// 	for (int i = 0; i < 3; i++) // Desired position
-// 	{
-// 		x_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,      // End-effector
-// 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
-// 		x_desired(i+3) = DyrosMath::cubic(play_time_, control_start_time_,    // COM of Link 4 
-// 			control_start_time_ + duration, x_2_init_(i), target_x(i+3), 0, 0);	
+	for (int i = 0; i < 3; i++) // Desired position
+	{
+		x_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,      // End-effector
+			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
+		x_desired(i+3) = DyrosMath::cubic(play_time_, control_start_time_,    // COM of Link 4 
+			control_start_time_ + duration, x_2_init_(i), target_x(i+3), 0, 0);	
 			
-// 	}
-// 	//---------------------------------------------------------------------------
+	}
+	//---------------------------------------------------------------------------
 
-// 	//---------------------------------------------------------------------------
-// 	// After calcuate desired pose and velocity, 
-// 	// calculate desired joint velocity by Closed Loop Inverse Kinematic (CLIK).
+	//---------------------------------------------------------------------------
+	// After calcuate desired pose and velocity, 
+	// calculate desired joint velocity by Closed Loop Inverse Kinematic (CLIK).
 
-// 	// error position
-// 	Vector6d x_qd, x_error;
-// 	// position(EEF, COM) from desired joint position
-// 	x_qd << CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 1], com_position_[DOF - 1], false),  // End-effector
-// 			CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 4], com_position_[DOF - 4], false);  // COM of Link
-// 	x_error = x_desired - x_qd;
+	// error position
+	Vector6d x, x_error;
+	// position(EEF, COM) from desired joint position
+	x << x_,// End-effector
+		 x_2_;  // COM of Link
+	x_error = x_desired - x;
 
-// 	// Feedback gain
-// 	Vector6d kp_diag;
-// 	kp_diag =100*Vector6d::Ones();
-// 	Matrix6d kp = kp_diag.asDiagonal();
+	// Feedback gain
+	Vector6d kp_diag;
+	kp_diag =100*Vector6d::Ones();
+	Matrix6d kp = kp_diag.asDiagonal();
 
-// 	// desired joint velocity and joint position
-// 	// Get jacobian from desired joint value, not current joint value
-// 	Matrix<double, 6, 7> j_qd;
-// 	j_qd << jacobianFromqd(0).block <3, DOF>(0, 0), jacobianFromqd(1).block < 3, DOF>(0, 0);
-// 	Vector7d qd_desired = j_qd.transpose() * ( j_qd * j_qd.transpose() + 0.01*EYE(6) ).inverse() * ( xd_desired + kp * x_error );
-// 	q_desired_ = q_desired_ + qd_desired / hz_;
-// 	// ----------------------------------------------------------------------------
+	// desired joint velocity and joint position
+	Matrix<double, 6, 7> j;
+	j << j_v_, j_2_.block < 3, DOF>(0, 0);
+	Vector7d qd_desired = j.transpose() * ( j * j.transpose() + 0.01*EYE(6) ).inverse() * ( xd_desired + kp * x_error );
+	q_desired_ = q_ + qd_desired / hz_;
+	// ----------------------------------------------------------------------------
 
-// 	// ----------------------------------------------------------------------------
-// 	// Save data
-// 	// [ current position(EEF, COM), desired position(EEF, COM), joint position ]
-// 	recordHw3(7, duration, x_desired);
-// 	// ----------------------------------------------------------------------------
-// }
+	// ----------------------------------------------------------------------------
+	// Save data
+	// [ desired position(EEF, COM),current position(EEF, COM),  joint position ]
+	recordHw4(4, duration, x_desired);
+	// ----------------------------------------------------------------------------
+}
 
-// void ArmController::hw_3_2(const Vector6d & target_x, double duration)
-// {
-// 	//------------------------------------------------------------------------
-// 	// Firstly, calculate desired pose and velocity ( end-effector ) for current time
-// 	// by given data ( target pose, duration ).
-// 	// Initial pose is given, initial and final velocity are zero.
-// 	// The velocity and position of x are of end-effector and COM of link 4.
+void ArmController::hw_4_2(const Vector6d & target_x, double duration)
+{
+	//------------------------------------------------------------------------
+	// Firstly, calculate desired pose and velocity ( end-effector ) for current time
+	// by given data ( target pose, duration ).
+	// Initial pose is given, initial and final velocity are zero.
+	// The velocity and position of x are of end-effector and COM of link 4.
 
-// 	Vector6d xd_desired, x_desired; // end-effector, COM of link 4
+	Vector6d xd_desired, x_desired; // end-effector, COM of link 4
 
-// 	for (int i = 0; i < 3; i++) // Desired linear velocity
-// 	{
-// 		xd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,   // End-effector
-// 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);  
-// 		xd_desired(i+3) = DyrosMath::cubicDot(play_time_, control_start_time_, // COM of Link 4 
-// 			control_start_time_ + duration, x_2_init_(i), target_x(i+3), 0, 0);
-// 	}
+	for (int i = 0; i < 3; i++) // Desired linear velocity
+	{
+		xd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,   // End-effector
+			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);  
+		xd_desired(i+3) = DyrosMath::cubicDot(play_time_, control_start_time_, // COM of Link 4 
+			control_start_time_ + duration, x_2_init_(i), target_x(i+3), 0, 0);
+	}
 
-// 	for (int i = 0; i < 3; i++) // Desired position
-// 	{
-// 		x_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,      // End-effector
-// 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
-// 		x_desired(i+3) = DyrosMath::cubic(play_time_, control_start_time_,    // COM of Link 4 
-// 			control_start_time_ + duration, x_2_init_(i), target_x(i+3), 0, 0);	
+	for (int i = 0; i < 3; i++) // Desired position
+	{
+		x_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,      // End-effector
+			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
+		x_desired(i+3) = DyrosMath::cubic(play_time_, control_start_time_,    // COM of Link 4 
+			control_start_time_ + duration, x_2_init_(i), target_x(i+3), 0, 0);	
 			
-// 	}
-// 	//---------------------------------------------------------------------------
+	}
+	//---------------------------------------------------------------------------
 
-// 	//---------------------------------------------------------------------------
-// 	// After calcuate desired pose and velocity, 
-// 	// calculate desired joint velocity by Closed Loop Inverse Kinematic (CLIK) with Null-space.
+	//---------------------------------------------------------------------------
+	// After calcuate desired pose and velocity, 
+	// calculate desired joint velocity by Closed Loop Inverse Kinematic (CLIK) with Null-space.
 
-// 	Vector6d x_qd, xd_CLIK;
-// 	// position(EEF, COM) from desired joint position
-// 	x_qd << CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 1], com_position_[DOF - 1], false), // End-effector
-// 			CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 4], com_position_[DOF - 4], false); // COM of Link 4
+	Vector6d x, xd_CLIK;
+	// position(EEF, COM) from desired joint position
+	x << x_, // End-effector
+		 x_2_; // COM of Link 4
 
-// 	// Feedback gain 
-// 	Vector3d kp_diag;
-// 	kp_diag =10*Vector3d::Ones();
-// 	Matrix3d kp = kp_diag.asDiagonal();	
+	// Feedback gain 
+	Vector6d kp_diag;
+	kp_diag =10*Vector6d::Ones();
+	Matrix6d kp = kp_diag.asDiagonal();	
 
-// 	// x_dot from CLIK
-// 	xd_CLIK.head(3) = xd_desired.head(3) + kp * ( x_desired.head(3) - x_qd.head(3) ); 
-// 	xd_CLIK.tail(3) = xd_desired.tail(3) + kp * ( x_desired.tail(3) - x_qd.tail(3) );
+	// x_dot from CLIK
+	xd_CLIK = xd_desired + kp * ( x_desired - x ); 
 
-// 	// Get Jacobian and pseudo-inverse Jacobian 
-// 	// Get jacobian from desired joint value, not current joint value
-// 	Matrix<double, 3, 7> j_qd_1, j_qd_2;
-// 	Matrix<double, 7, 3>j_pseudo_1, j_pseudo_2;
-// 	j_qd_1 = jacobianFromqd(0).block <3, DOF>(0, 0); // End-effector
-// 	j_qd_2 = jacobianFromqd(1).block <3, DOF>(0, 0); // COM of Link 4
-// 	j_pseudo_1 = j_qd_1.transpose() * ( j_qd_1 * j_qd_1.transpose() ).inverse(); // End-effector
-// 	j_pseudo_2 = j_qd_2.transpose() * ( j_qd_2 * j_qd_2.transpose() ).inverse(); // COM of Link 4
+	// Get Jacobian and pseudo-inverse Jacobian 
+	Matrix<double, 3, 7> j_1, j_2;
+	Matrix<double, 7, 3>j_pseudo_1, j_pseudo_2;
+	j_1 = j_v_; // End-effector
+	j_2 = j_2_.block <3, DOF>(0, 0); // COM of Link 4
+	j_pseudo_1 = j_1.transpose() * ( j_1 * j_1.transpose() ).inverse(); // End-effector
+	j_pseudo_2 = j_2.transpose() * ( j_2 * j_2.transpose() ).inverse(); // COM of Link 4
 
-// 	// Null-space
-// 	Matrix7d Null = EYE(7) - j_pseudo_1 * j_qd_1;
+	// Null-space
+	Matrix7d Null = EYE(7) - j_pseudo_1 * j_1;
 
-// 	// desired joint velocity and joint position
-// 	Vector7d qd_2desired = j_pseudo_2 * ( xd_CLIK.tail(3) - j_qd_2 * j_pseudo_1 * xd_CLIK.head(3) );
-// 	Vector7d qd_desired  = j_pseudo_1 * xd_CLIK.head(3) + Null * qd_2desired; 
-// 	q_desired_ = q_desired_ + qd_desired / hz_; 
-// 	// ----------------------------------------------------------------------------
+	// desired joint velocity and joint position
+	Vector7d qd_2desired = j_pseudo_2 * ( xd_CLIK.tail(3) - j_2 * j_pseudo_1 * xd_CLIK.head(3) );
+	Vector7d qd_desired  = j_pseudo_1 * xd_CLIK.head(3) + Null * qd_2desired; 
+	q_desired_ = q_ + qd_desired / hz_; 
+	// ----------------------------------------------------------------------------
 
-// 	// ----------------------------------------------------------------------------
-// 	// Save data
-// 	// [ current position(EEF, COM), desired position(EEF, COM), joint position ]
-// 	recordHw3(8, duration, x_desired);
-// 	// ----------------------------------------------------------------------------
-// }
+	// ----------------------------------------------------------------------------
+	// Save data
+	// [ desired position(EEF, COM), current position(EEF, COM), joint position ]
+	recordHw4(5, duration, x_desired);
+	// ----------------------------------------------------------------------------
+}
 
-// void ArmController::hw_3_3(const Vector6d & target_x, double duration, bool isStep)
+void ArmController::hw_5_1(const Vector7d &target_q, double duration)
+{
+	// Simple PD controller
+	//---------------------------------------------------------------------------
+	// Gain Matrix
+	Vector7d kp_diag, kv_diag;
+	Matrix7d kp, kv;
+	kp_diag = 30 * Vector7d::Ones();
+	kv_diag = 1 * Vector7d::Ones();
+	kp = kp_diag.asDiagonal();
+	kv = kv_diag.asDiagonal();
+
+	// desired joint value
+	Vector7d q_desired, qd_desired;
+	qd_desired = Vector7d::Zero();
+	if(play_time_ < control_start_time_ + duration/2)  q_desired = q_init_;
+	else q_desired = target_q;
+
+	// Apply force
+	torque_desired_ = kp*( q_desired - q_ ) + kv*( qd_desired - qdot_ );
+	//---------------------------------------------------------------------------
+
+	// ----------------------------------------------------------------------------
+	// Save data
+	// [ desired joint position, current joint position]
+	recordHw5(6, duration, q_desired);
+	// ----------------------------------------------------------------------------
+}
+
+void ArmController::hw_5_2_1(const Vector7d &target_q, double duration)
+{
+	// Simple PD controller
+	//---------------------------------------------------------------------------
+	// Gain Matrix
+	Vector7d kp_diag, kv_diag;
+	Matrix7d kp, kv;
+	kp_diag = 30 * Vector7d::Ones();
+	kv_diag = 1 * Vector7d::Ones();
+	kp = kp_diag.asDiagonal();
+	kv = kv_diag.asDiagonal();
+
+	// desired joint value
+	Vector7d q_desired, qd_desired;
+	qd_desired = Vector7d::Zero();
+	if(play_time_ < control_start_time_ + duration/2)  q_desired = q_init_;
+	else q_desired = target_q;
+
+	// Apply force
+	torque_desired_ = ( kp*( q_desired - q_ ) + kv*( qd_desired - qdot_ ) ) + g_;
+	//---------------------------------------------------------------------------
+
+	// ----------------------------------------------------------------------------
+	// Save data
+	// [ desired joint position, current joint position]
+	recordHw5(7, duration, q_desired);
+	// ----------------------------------------------------------------------------
+}
+
+void ArmController::hw_5_2_2(const Vector7d &target_q, double duration)
+{
+	// Simple PD controller
+	// ----------------------------------------------------------------------------
+	// Gain Matrix
+	Vector7d kp_diag, kv_diag;
+	Matrix7d kp, kv;
+	kp_diag = 30 * Vector7d::Ones();
+	kv_diag = 1 * Vector7d::Ones();
+	kp = kp_diag.asDiagonal();
+	kv = kv_diag.asDiagonal();
+
+	// desired joint value
+	Vector7d q_desired, qd_desired;
+	for (int i = 0; i < 7; i++)
+	{
+		qd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,
+			control_start_time_ + duration, q_init_(i), target_q(i), 0, 0);
+		q_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,
+			control_start_time_ + duration, q_init_(i), target_q(i), 0, 0);
+	}
+
+	// Apply force
+	torque_desired_ = ( kp*( q_desired - q_ ) + kv*( qd_desired - qdot_ ) ) + g_;
+	// ----------------------------------------------------------------------------
+
+	// ----------------------------------------------------------------------------
+	// Save data
+	// [ desired joint position, current joint position]
+	recordHw5(8, duration, q_desired);
+	// ----------------------------------------------------------------------------
+}
+
+void ArmController::hw_5_3_1(const Vector7d &target_q, double duration)
+{
+	// Simple PD controller
+	// ----------------------------------------------------------------------------
+	// Gain Matrix
+	Vector7d kp_diag, kv_diag;
+	Matrix7d kp, kv;
+	kp_diag = 400 * Vector7d::Ones();
+	kv_diag = 40 * Vector7d::Ones();
+	kp = kp_diag.asDiagonal();
+	kv = kv_diag.asDiagonal();
+
+	// desired joint value
+	Vector7d q_desired, qd_desired;
+	qd_desired = Vector7d::Zero();
+	if(play_time_ < control_start_time_ + duration/2)  q_desired = q_init_;
+	else q_desired = target_q;
+
+	// Apply force
+	torque_desired_ = m_ * ( kp*( q_desired - q_ ) + kv*( qd_desired - qdot_ ) ) + g_;
+	// ----------------------------------------------------------------------------
+
+	// ----------------------------------------------------------------------------
+	// Save data
+	// [ desired joint position, current joint position]
+	recordHw5(9, duration, q_desired);
+	// ----------------------------------------------------------------------------
+}
+
+void ArmController::hw_5_3_2(const Vector7d &target_q, double duration)
+{
+	// Simple PD controller
+	// ----------------------------------------------------------------------------
+	// Gain Matrix
+	Vector7d kp_diag, kv_diag;
+	Matrix7d kp, kv;
+	kp_diag = 400 * Vector7d::Ones();
+	kv_diag = 40 * Vector7d::Ones();
+	kp = kp_diag.asDiagonal();
+	kv = kv_diag.asDiagonal();
+
+	// desired joint value
+	Vector7d q_desired, qd_desired;
+	for (int i = 0; i < 7; i++)
+	{
+		qd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,
+			control_start_time_ + duration, q_init_(i), target_q(i), 0, 0);
+		q_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,
+			control_start_time_ + duration, q_init_(i), target_q(i), 0, 0);
+	}
+
+	// Apply force
+	torque_desired_ = m_ * ( kp*( q_desired - q_ ) + kv*( qd_desired - qdot_ ) ) + g_;
+	// ----------------------------------------------------------------------------
+
+	// ----------------------------------------------------------------------------
+	// Save data
+	// [ desired joint position, current joint position]
+	recordHw5(10, duration, q_desired);
+	// ----------------------------------------------------------------------------
+}
+
+// void ArmController::hw_6_1_1(const Vector12d &target_x, double duration)
 // {
-// 	//------------------------------------------------------------------------
-// 	//------------------------------------------------------------------------
-// 	// Firstly, calculate desired pose and velocity ( end-effector ) for current time
-// 	// by given data ( target pose, duration ).
-// 	// Initial pose is given, initial and final velocity are zero.
-// 	// The velocity and position of x are of end-effector and COM of link 4.
-
-// 	Vector6d xd_desired, x_desired; // end-effector, COM of link 4
-
-// 	for (int i = 0; i < 3; i++) // Desired linear velocity
-// 	{
-// 		xd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,   // End-effector
-// 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);  
-// 		xd_desired(i+3) = DyrosMath::cubicDot(play_time_, control_start_time_, // COM of Link 4 
-// 			control_start_time_ + duration, x_2_init_(i), target_x(i+3), 0, 0);
-// 	}
-
-// 	for (int i = 0; i < 3; i++) // Desired position
-// 	{
-// 		x_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,      // End-effector
-// 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
-// 		x_desired(i+3) = DyrosMath::cubic(play_time_, control_start_time_,    // COM of Link 4 
-// 			control_start_time_ + duration, x_2_init_(i), target_x(i+3), 0, 0);	
-			
-// 	}
-// 	//---------------------------------------------------------------------------
-
-// 	//---------------------------------------------------------------------------
-// 	// After calcuate desired pose and velocity, 
-// 	// calculate desired joint velocity by Closed Loop Inverse Kinematic (CLIK) 
-// 	// with Null-space and transition algorithm.
+// 	Vector3d x_desired; // position
+// 	Matrix3d rotation_desired; // orientation
+// 	Vector6d xd_desired, x_error, xd_error; // v, w
 	
-// 	Vector6d x_qd, xd_CLIK;
-// 	// position(EEF, COM) from desired joint position
-// 	x_qd << CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 1], com_position_[DOF - 1], false), // End-effector
-// 			CalcBodyToBaseCoordinates(*model_, q_desired_, body_id_[DOF - 4], com_position_[DOF - 4], false); // COM of Link 4
-
-// 	// Feedback gain 
-// 	Vector3d kp_diag;
-// 	kp_diag =10*Vector3d::Ones();
-// 	Matrix3d kp = kp_diag.asDiagonal();	
-
-// 	// x_dot from CLIK
-// 	xd_CLIK.head(3) = xd_desired.head(3) + kp * ( x_desired.head(3) - x_qd.head(3) ); 
-// 	xd_CLIK.tail(3) = xd_desired.tail(3) + kp * ( x_desired.tail(3) - x_qd.tail(3) );
-
-// 	// Get Jacobian and pseudo-inverse Jacobian 
-// 	// Get jacobian from desired joint value, not current joint value
-// 	Matrix<double, 3, 7> j_qd_1, j_qd_2;
-// 	Matrix<double, 7, 3>j_pseudo_1, j_pseudo_2;
-// 	j_qd_1 = jacobianFromqd(0).block <3, DOF>(0, 0); // End-effector
-// 	j_qd_2 = jacobianFromqd(1).block <3, DOF>(0, 0); // COM of Link 4
-// 	j_pseudo_1 = j_qd_1.transpose() * ( j_qd_1 * j_qd_1.transpose() ).inverse(); // End-effector
-// 	j_pseudo_2 = j_qd_2.transpose() * ( j_qd_2 * j_qd_2.transpose() ).inverse(); // COM of Link 4
-
-// 	// Null-space
-// 	Matrix7d Null = EYE(7) - j_pseudo_1 * j_qd_1;
-
-// 	// Parameter for task transition(h)
-// 	double h_1, h_2;
-// 	h_1 = 1.0;
-// 	if(isStep)
+// 	// Desired trajectory
+// 	// ----------------------------------------------------------------------------
+// 	xd_desired = Vector6d::Zero();
+// 	if(play_time_ < control_start_time_ + duration/2)
 // 	{
-// 		if(play_time_ > (control_start_time_ + duration/2)) h_2 = 1.0;
-// 		else                                                h_2 = 0.0;
+// 		x_desired = x_init_;
+// 		rotation_desired = rotation_init_;
 // 	}
 // 	else
 // 	{
-// 		if(play_time_ > control_start_time_ + duration)     h_2 = 1.0;
-// 		else if(play_time_ < control_start_time_)           h_2 = 0.0;
-// 		else                                                h_2 = (play_time_ - control_start_time_) / duration;
+// 		x_desired = target_x.head(3);
+// 		rotation_desired << target_x.tail(9);
 // 	}
-
-
-// 	Vector3d xd_i_1, xd_i_2;
-// 	xd_i_1 = h_1 * xd_CLIK.head(3) + (1-h_1) * j_qd_1 *j_pseudo_2 * h_2 * xd_CLIK.tail(3);
-// 	xd_i_2 = h_2 * xd_CLIK.tail(3) + (1-h_2) * j_qd_2 *j_pseudo_1 * h_1 * xd_CLIK.head(3); 
-
-// 	// desired joint velocity and joint position
-// 	Vector7d qd_desired  = j_pseudo_1 * xd_i_1 + Null * j_pseudo_2 * ( xd_i_2 - j_qd_2 * j_pseudo_1 * xd_i_1 ); 
-// 	q_desired_ = q_desired_ + qd_desired / hz_; 
 // 	// ----------------------------------------------------------------------------
 
 // 	// ----------------------------------------------------------------------------
-// 	// Save data
-// 	// [ current position(EEF, COM), desired position(EEF, COM), joint position ]
-// 	if(isStep) recordHw3(9, duration, x_desired);
-// 	else recordHw3(10, duration, x_desired);
-// 	// ----------------------------------------------------------------------------
-// }
+// 	// Gain
+// 	Matrix6d Kp, Kv;
+// 	Vector6d Kp_diag, Kv_diag;
+// 	Kp_diag << 50, 50, 50, 10, 10, 10;
+// 	Kv_diag << 50, 50, 50, 10, 10, 10;
+// 	Kp = Kp_diag.asDiagonal();
+// 	Kv = Kv_diag.asDiagonal();
 
-// void ArmController::hw_4_1(const Vector7d &target_q, double duration)
-// {
-// 	// Simple PD controller
-
-// 	// Gain Matrix
-// 	Vector7d kp_diag, kv_diag;
-// 	Matrix7d kp, kv;
-// 	kp_diag = 30 * Vector7d::Ones();
-// 	kv_diag = 1 * Vector7d::Ones();
-// 	kp = kp_diag.asDiagonal();
-// 	kv = kv_diag.asDiagonal();
-
-// 	// desired joint value
-// 	Vector7d q_desired, qd_desired;
-// 	qd_desired = Vector7d::Zero();
-// 	if(play_time_ < control_start_time_ + duration/2)  q_desired = q_init_;
-// 	else q_desired = target_q;
-
-// 	// Apply force
-// 	torque_desired_ = kp*( q_desired - q_ ) + kv*( qd_desired - qdot_ );
-
-// 	// record
-// 	recordHw4(11, duration, q_desired);
-// }
-
-// void ArmController::hw_4_2(const Vector7d &target_q, double duration, bool isStep)
-// {
-// 	// Simple PD controller
-
-// 	// Gain Matrix
-// 	Vector7d kp_diag, kv_diag;
-// 	Matrix7d kp, kv;
-// 	kp_diag = 30 * Vector7d::Ones();
-// 	kv_diag = 1 * Vector7d::Ones();
-// 	kp = kp_diag.asDiagonal();
-// 	kv = kv_diag.asDiagonal();
-
-// 	// desired joint value
-// 	Vector7d q_desired, qd_desired;
-// 	if(isStep)
-// 	{
-// 		qd_desired = Vector7d::Zero();
-// 		if(play_time_ < control_start_time_ + duration/2)  q_desired = q_init_;
-// 		else q_desired = target_q;
-// 	}
-// 	else
-// 	{
-// 		for (int i = 0; i < 7; i++)
-// 		{
-// 			qd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,
-// 				control_start_time_ + duration, q_init_(i), target_q(i), 0, 0);
-// 			q_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,
-// 				control_start_time_ + duration, q_init_(i), target_q(i), 0, 0);
-// 		}
-// 	}
-
-// 	// Apply force
-// 	torque_desired_ = ( kp*( q_desired - q_ ) + kv*( qd_desired - qdot_ ) ) + g_;
-
-// 	// record
-// 	recordHw4(12, duration, q_desired);
-// }
-
-// void ArmController::hw_4_3(const Vector7d &target_q, double duration, bool isStep)
-// {
-// 	// Simple PD controller
-
-// 	// Gain Matrix
-// 	Vector7d kp_diag, kv_diag;
-// 	Matrix7d kp, kv;
-// 	kp_diag = 400 * Vector7d::Ones();
-// 	kv_diag = 40 * Vector7d::Ones();
-// 	kp = kp_diag.asDiagonal();
-// 	kv = kv_diag.asDiagonal();
-
-// 	// desired joint value
-// 	Vector7d q_desired, qd_desired;
-// 	if(isStep)
-// 	{
-// 		qd_desired = Vector7d::Zero();
-// 		if(play_time_ < control_start_time_ + duration/2)  q_desired = q_init_;
-// 		else q_desired = target_q;
-// 	}
-// 	else
-// 	{
-// 		for (int i = 0; i < 7; i++)
-// 		{
-// 			qd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,
-// 				control_start_time_ + duration, q_init_(i), target_q(i), 0, 0);
-// 			q_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,
-// 				control_start_time_ + duration, q_init_(i), target_q(i), 0, 0);
-// 		}
-// 	}
-
-
-	
-
-// 	// Apply force
-// 	torque_desired_ = m_ * ( kp*( q_desired - q_ ) + kv*( qd_desired - qdot_ ) ) + g_;
-
-// 	// record
-// 	if(isStep) recordHw4(13, duration, q_desired);
-// 	else recordHw4(14, duration, q_desired);
-	
-// }
-
-// void ArmController::hw_5_1(const Vector12d &target_x, double duration, bool isStep)
-// {
-// 	double kp, kv;
-// 	kp = 400.0;
-// 	kv = 40.0;
-
-// 	Vector3d x_desired; // pose, orientation
-// 	Matrix3d rotation_desired;
-// 	Vector6d xd_desired, x_error; // v, w
-	
-// 	if(isStep)
-// 	{
-// 		xd_desired = Vector6d::Zero();
-// 		if(play_time_ < control_start_time_ + duration/2)
-// 		{
-// 			x_desired = x_init_;
-// 			rotation_desired = rotation_init_;
-// 		}
-// 		else
-// 		{
-// 			x_desired = target_x.head(3);
-// 			rotation_desired << target_x.tail(9);
-// 		}
-// 	}
-// 	else
-// 	{
-// 		for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired linear velocity를 구한다.
-// 		{
-// 			xd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,
-// 				control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
-// 		}
-// 		Matrix3d rotation;
-
-// 		for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired angular velocity를 구한다.
-// 		{
-// 			rotation.block<3, 1>(0, i) = target_x.segment<3>(3 + i * 3);
-// 		}
-// 		xd_desired.segment<3>(3) = DyrosMath::rotationCubicDot(play_time_, control_start_time_,
-// 			control_start_time_ + duration, Vector3d::Zero(), Vector3d::Zero(), rotation_init_, rotation);
-
-// 		for (int i = 0; i < 3; i++) // 현재 시간에 맞는 desired position을 구한다.
-// 		{
-// 			x_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,
-// 				control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
-// 		}
-
-// 		// 현재 시간에 맞는 desired ratation을 구한다.
-// 		rotation_desired = DyrosMath::rotationCubic(play_time_, control_start_time_,
-// 			control_start_time_ + duration, rotation_init_, rotation);
-// 	}
-	
-// 	Vector6d control_force; // force, momentum
+// 	// Calculate Control Force
+// 	Vector6d control_force;
 // 	x_error.segment<3>(0) = x_desired - x_;	
-// 	x_error.segment<3>(3) = DyrosMath::getPhi(rotation_, rotation_desired);
-// 	control_force.segment<3>(0) = kp * x_error.head(3) + kv * (xd_desired.head(3) - x_dot_.head(3));
-// 	control_force.segment<3>(3) = -kp * x_error.tail(3) - kv * xd_desired.tail(3);
+// 	x_error.segment<3>(3) = DyrosMath::getPhi(rotation_desired, rotation_);
+// 	xd_error = xd_desired - x_dot_;
+// 	control_force = Kp*x_error + Kv*xd_error;
 
-// 	Vector7d null_torque = m_ * ( kp * (q_init_ - q_) - kv * qdot_ );
-// 	Matrix6d PseudoKine = ( j_ * m_.inverse() * j_.transpose() ).inverse();
-// 	Matrix<double, 7, 6> GeneralInvJ = m_.inverse() * j_.transpose() * PseudoKine;
+// 	// Apply Torque
+// 	torque_desired_ = j_.transpose() * control_force + g_;
+// 	// ----------------------------------------------------------------------------
 
-
-// 	torque_desired_ = j_.transpose() * PseudoKine * control_force + ( EYE(7) - j_.transpose() * GeneralInvJ.transpose() ) * null_torque +  g_;
-
-// 	if(isStep) recordHw5(15, duration, x_desired, xd_desired);
-// 	else recordHw5(16, duration, x_desired, xd_desired);
+// 	// ----------------------------------------------------------------------------
+// 	// Save data
+// 	// [ desired position, current position, desired orientation, current orientation, joint position]
+// 	recordHW6(11, duration, x_desired, rotation_desired);
+// 	// ----------------------------------------------------------------------------
 // }
 
-// void ArmController::hw_5_2(const Vector12d &target_x, double duration)
+// void ArmController::hw_6_1_2(const Vector12d &target_x, double duration)
 // {
-// 	double kp, kv;
-// 	kp = 400.0;
-// 	kv = 40.0;
-
-// 	Vector3d x_desired; // pose, orientation
-// 	Matrix3d rotation_desired;
-// 	Vector6d xd_desired, x_error; // v, w
-// 	double xd_max = 0.3;
 	
-// 	if(play_time_ < control_start_time_ + duration/2)
-// 	{
-// 		x_desired = x_init_;
-// 		rotation_desired = rotation_init_;
-// 	}
-// 	else
-// 	{
-// 		x_desired = target_x.head(3);
-// 		rotation_desired << target_x.tail(9);
-// 	}
-
-// 	if( ( kp/kv * (x_desired - x_) ).norm() < xd_max )
-// 	{
-// 		xd_desired.head(3) = kp/kv * (x_desired - x_);
-// 	}
-// 	else
-// 	{
-// 		xd_desired.head(3) = xd_max / (x_desired - x_).norm() * (x_desired - x_);
-// 	}
-// 	xd_desired.tail(3) = Vector3d::Zero();
+// 	Vector3d x_desired; // position
+// 	Matrix3d rotation_desired; // orientation
+// 	Vector6d xd_desired, x_error, xd_error; // v, w
 	
-// 	Vector6d control_force; // force, momentum
-// 	// x_error.segment<3>(0) = x_desired - x_;	
-// 	x_error.segment<3>(3) = DyrosMath::getPhi(rotation_, rotation_desired);
-// 	control_force.segment<3>(0) = kv * (xd_desired.head(3) - x_dot_.head(3));
-// 	control_force.segment<3>(3) = -kp * x_error.tail(3) - kv * xd_desired.tail(3);
+// 	// Desired trajectory
+// 	// ----------------------------------------------------------------------------
+// 	// desired linear velocity
+// 	for (int i = 0; i < 3; i++) 
+// 	{
+// 		xd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,
+// 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
+// 	}
 
-// 	Vector7d null_torque = m_ * ( kp * (q_init_ - q_) - kv * qdot_ );
-// 	Matrix6d PseudoKine = ( j_ * m_.inverse() * j_.transpose() ).inverse();
-// 	Matrix<double, 7, 6> GeneralInvJ = m_.inverse() * j_.transpose() * PseudoKine;
+// 	// Get target rotation matrix
+// 	Matrix3d rotation;
+// 	for (int i = 0; i < 3; i++) 
+// 	{
+// 		rotation.block<3, 1>(0, i) = target_x.segment<3>(3 + i * 3);
+// 	}
 
+// 	// desired angular velocity
+// 	xd_desired.tail(3) = DyrosMath::rotationCubicDot(play_time_, control_start_time_,
+// 		control_start_time_ + duration, Vector3d::Zero(), Vector3d::Zero(), rotation_init_, rotation);
 
-// 	torque_desired_ = j_.transpose() * PseudoKine * control_force + ( EYE(7) - j_.transpose() * GeneralInvJ.transpose() ) * null_torque +  g_;
+// 	// desired position
+// 	for (int i = 0; i < 3; i++)
+// 	{
+// 		x_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,
+// 			control_start_time_ + duration, x_init_(i), target_x(i), 0, 0);
+// 	}
 
-// 	recordHw5(17, duration, x_desired, xd_desired);
+// 	// desired orientation
+// 	Matrix3d rotation_desired = DyrosMath::rotationCubic(play_time_, control_start_time_,
+// 		control_start_time_ + duration, rotation_init_, rotation);
+// 	// ----------------------------------------------------------------------------
+	
+// 	// ----------------------------------------------------------------------------
+// 	// Gain
+// 	Matrix6d Kp, Kv;
+// 	Vector6d Kp_diag, Kv_diag;
+// 	Kp_diag << 50, 50, 50, 10, 10, 10;
+// 	Kv_diag << 50, 50, 50, 10, 10, 10;
+// 	Kp = Kp_diag.asDiagonal();
+// 	Kv = Kv_diag.asDiagonal();
+
+// 	// Calculate Control Force
+// 	Vector6d control_force;
+// 	x_error.segment<3>(0) = x_desired - x_;	
+// 	x_error.segment<3>(3) = DyrosMath::getPhi(rotation_desired, rotation_);
+// 	xd_error = xd_desired - x_dot_;
+// 	control_force = Kp*x_error + Kv*xd_error;
+
+// 	// Apply Torque
+// 	torque_desired_ = j_.transpose() * control_force + g_;
+// 	// ----------------------------------------------------------------------------
+
+// 	// ----------------------------------------------------------------------------
+// 	// Save data
+// 	// [ desired position, current position, desired orientation, current orientation, joint position]
+// 	recordHW6(12, duration, x_desired, rotation_desired);
+// 	// ----------------------------------------------------------------------------
 // }
 
-// void ArmController::hw_7(const Vector12d &target_x, double duration)
-// {
-// 	double kp, kv;
-// 	kp = 400.0;
-// 	kv = 40.0;
-
-// 	Vector3d x_desired; // pose, orientation
-// 	Matrix3d rotation_desired;
-// 	Vector6d xd_desired, x_error; // v, w
-// 	double xd_max = 0.3;
-	
-// 	if(play_time_ < control_start_time_ + duration/2)
-// 	{
-// 		x_desired = x_init_;
-// 		rotation_desired = rotation_init_;
-// 	}
-// 	else
-// 	{
-// 		x_desired = target_x.head(3);
-// 		rotation_desired << target_x.tail(9);
-// 	}
-
-// 	if( ( kp/kv * (x_desired - x_) ).norm() < xd_max )
-// 	{
-// 		xd_desired.head(3) = kp/kv * (x_desired - x_);
-// 	}
-// 	else
-// 	{
-// 		xd_desired.head(3) = xd_max / (x_desired - x_).norm() * (x_desired - x_);
-// 	}
-// 	xd_desired.tail(3) = Vector3d::Zero();
-
-// 	Vector3d x_obs;
-// 	x_obs << 0.15, -0.012, 0.65; 
-// 	double dist_obs, dist_0, k_obs;
-// 	dist_obs = (x_ - x_obs).norm();
-// 	dist_0 = 0.15;
-// 	k_obs = 0.1;
-// 	Vector3d rep_force = k_obs * (1/dist_obs - 1/dist_0) * pow(dist_obs, -3) * (x_ - x_obs);
-	
-// 	Vector6d control_force; // force, momentum
-// 	// x_error.segment<3>(0) = x_desired - x_;	
-// 	x_error.segment<3>(3) = DyrosMath::getPhi(rotation_, rotation_desired);
-// 	control_force.segment<3>(0) = kv * (xd_desired.head(3) - x_dot_.head(3)) + rep_force;
-// 	control_force.segment<3>(3) = -kp * x_error.tail(3) - kv * xd_desired.tail(3);
-
-// 	Vector7d null_torque = m_ * ( kp * (q_init_ - q_) - kv * qdot_ );
-// 	Matrix6d PseudoKine = ( j_ * m_.inverse() * j_.transpose() ).inverse();
-// 	Matrix<double, 7, 6> GeneralInvJ = m_.inverse() * j_.transpose() * PseudoKine;
-
-
-// 	torque_desired_ = j_.transpose() * PseudoKine * control_force + ( EYE(7) - j_.transpose() * GeneralInvJ.transpose() ) * null_torque +  g_;
-
-// 	recordHw5(18, duration, x_desired, xd_desired);
-// }
 
 // Controller Core Methods ----------------------------
 
