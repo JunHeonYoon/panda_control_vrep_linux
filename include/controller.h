@@ -107,10 +107,10 @@ private:
 	void hw_5_2_2(const Vector7d & target_q, double duration);
 	void hw_5_3_1(const Vector7d & target_q, double duration);
 	void hw_5_3_2(const Vector7d & target_q, double duration);
-	void hw_6_1_1(const Vector12d & target_x, double duration);
-	void hw_6_1_2(const Vector12d & target_x, double duration);
-	void hw_6_2_1(const Vector12d & target_x, double duration);
-	void hw_6_2_2(const Vector12d & target_x, double duration);
+	// void hw_6_1_1(const Vector12d & target_x, double duration);
+	// void hw_6_1_2(const Vector12d & target_x, double duration);
+	// void hw_6_2_1(const Vector12d & target_x, double duration);
+	// void hw_6_2_2(const Vector12d & target_x, double duration);
 
 public:
 	void readData(const Vector7d &position, const Vector7d &velocity, const Vector7d &torque);
