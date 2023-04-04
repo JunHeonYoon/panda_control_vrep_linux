@@ -104,16 +104,16 @@ void ArmController::compute()
 	{
 		Vector7d target_position;
 		target_position << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, M_PI / 4;
-		moveJointPositionTorque(target_position, 1.0);
-		// moveJointPosition(target_position, 1.0);
+		// moveJointPositionTorque(target_position, 1.0);
+		moveJointPosition(target_position, 1.0);
 	}
 	else if(control_mode_ == "joint_ctrl_init")
 	{
 		Vector7d target_position;
 		target_position << 0.0, 0.0, 0.0, -M_PI / 2., 0.0, M_PI / 2, 0;
 		// target_position << 0.0, 0.0, 0.0, -M_PI / 6., 0.0, M_PI / 2, 0;
-		moveJointPositionTorque(target_position, 1.0);     
-		// moveJointPosition(target_position, 1.0);                
+		// moveJointPositionTorque(target_position, 1.0);     
+		moveJointPosition(target_position, 1.0);                
 	}
 	else if (control_mode_ == "hw_3_1")
 	{
@@ -610,7 +610,7 @@ void ArmController::hw_3_4(const Vector12d & target_x, double duration)
 
 	// Set weighted matrix 
 	Vector7d w_inv;
-	w_inv << 1.0, 1.0, 1.0, 0.001, 1.0, 1.0, 1.0;
+	w_inv << 1.0, 1.0, 1.0, 0.01, 1.0, 1.0, 1.0;
 	Matrix7d W_inv = w_inv.asDiagonal();
 
 	// desired joint velocity and joint position

@@ -1,104 +1,74 @@
-function hw3_plot(data, time)
+function hw3_plot(data_index, data)
 
-% error = zeros(length(data), 1);
-% diff = zeros(length(data), 3);
-% diff = [ data(:,4)-data(:,1), data(:,5)-data(:,2), data(:,6)-data(:,3)];
-% for k=1:length(data)
-%     error(k, 1) = norm(diff(k));
-% end
+Name = ["HW 3-1", "HW 3-2", "HW 3-3", "HW 3-4"];
+time = (1:length(data{1}))*0.1;
+Color = [0, 0.4470, 0.7410; 
+         0.8500, 0.3250, 0.0980;
+         0.4940, 0.1840, 0.5560;
+         0.4660, 0.6740, 0.1880];
+tmp_index = [7 10 13 8 11 14 9 12 15];
 
 
-figure("Name","End-effector Position");
+f1 = figure("Name","End-effector Position");
+f1.WindowState = 'maximized';
 subplot(3, 1, 1)
-plot(time, data(:, 1), "k--", "LineWidth", 3); hold on
-plot(time, data(:, 4), "r"); hold off
+plot(time, data{1}(:, 1), "k--", "LineWidth", 3); hold on
+for i=data_index
+    plot(time, data{i}(:, 4), "Color", Color(i,:),"LineWidth", 2); 
+end
+hold off
 title("X" ); xlabel("Time [sec]"); ylabel("Position [m]"); grid on
-legend(["Desired", "Operated"])
+legend(["Desired", Name(data_index)], 'Location','northeastoutside')
 subplot(3, 1, 2)
-plot(time, data(:, 2), "k--", "LineWidth", 3); hold on
-plot(time, data(:, 5), "r"); hold off
+plot(time, data{1}(:, 2), "k--", "LineWidth", 3); hold on
+for i=data_index
+    plot(time, data{i}(:, 5), "Color", Color(i,:),"LineWidth", 2); 
+end
+hold off
 title("Y"); xlabel("Time[sec]"); ylabel("Position [m]"); grid on
-legend(["Desired", "Operated"])
+legend(["Desired", Name(data_index)], 'Location','northeastoutside')
 subplot(3, 1, 3)
-plot(time, data(:, 3), "k--", "LineWidth", 3); hold on
-plot(time, data(:, 6), "r"); hold off
+plot(time, data{1}(:, 3), "k--", "LineWidth", 3); hold on
+for i=data_index
+    plot(time, data{i}(:, 6), "Color", Color(i,:),"LineWidth", 2); 
+end
+hold off
 title("Z"); xlabel("Time[sec]"); ylabel("Position [m]");ylim([0.57,0.68]); grid on
-legend(["Desired", "Operated"])
-% subplot(4, 1, 4)
-% plot(time, error, "b-", "LineWidth", 3); 
-% title("Error"); xlabel("Time[sec]"); ylabel("Position [m]"); grid on
+legend(["Desired", Name(data_index)], 'Location','northeastoutside')
+pause(0.5)
+saveas(gcf, strcat("plot figure/HW3/HW_", erase(num2str(data_index)," "), "(posi).svg"))
 
 
 
-figure("Name","End-effector Rotation");
-subplot(3, 3, 1)
-plot(time, data(:, 7), "k--", "LineWidth", 3); hold on
-plot(time, data(:, 16), "r"); hold off
-title("r{11}" ); xlabel("Time [sec]"); ylabel("Rotation Matrix Element(R_{11})");ylim([-1,1]); grid on
-legend(["Desired", "Operated"])
-subplot(3, 3, 4)
-plot(time, data(:, 8), "k--", "LineWidth", 3); hold on
-plot(time, data(:, 17), "r"); hold off
-title("r{21}" ); xlabel("Time [sec]"); ylabel("Rotation Matrix Element(R_{21})");ylim([-1,1]); grid on
-legend(["Desired", "Operated"])
-subplot(3, 3, 7)
-plot(time, data(:, 9), "k--", "LineWidth", 3); hold on
-plot(time, data(:, 18), "r"); hold off
-title("r{31}" ); xlabel("Time [sec]"); ylabel("Rotation Matrix Element(R_{31})");ylim([-1,1]); grid on
-legend(["Desired", "Operated"])
-subplot(3, 3, 2)
-plot(time, data(:, 10), "k--", "LineWidth", 3); hold on
-plot(time, data(:, 19), "r"); hold off
-title("r{12}" ); xlabel("Time [sec]"); ylabel("Rotation Matrix Element(R_{12})");ylim([-1,1]); grid on
-legend(["Desired", "Operated"])
-subplot(3, 3, 5)
-plot(time, data(:, 11), "k--", "LineWidth", 3); hold on
-plot(time, data(:, 20), "r"); hold off
-title("r{22}" ); xlabel("Time [sec]"); ylabel("Rotation Matrix Element(R_{22})");ylim([-1,1]); grid on
-legend(["Desired", "Operated"])
-subplot(3, 3, 8)
-plot(time, data(:, 12), "k--", "LineWidth", 3); hold on
-plot(time, data(:, 21), "r"); hold off
-title("r{32}" ); xlabel("Time [sec]"); ylabel("Rotation Matrix Element(R_{32})");ylim([-1,1]); grid on
-legend(["Desired", "Operated"])
-subplot(3, 3, 3)
-plot(time, data(:, 13), "k--", "LineWidth", 3); hold on
-plot(time, data(:, 22), "r"); hold off
-title("r{13}" ); xlabel("Time [sec]"); ylabel("Rotation Matrix Element(R_{13})");ylim([-1,1]); grid on
-legend(["Desired", "Operated"])
-subplot(3, 3, 6)
-plot(time, data(:, 14), "k--", "LineWidth", 3); hold on
-plot(time, data(:, 23), "r"); hold off
-title("r{23}" ); xlabel("Time [sec]"); ylabel("Rotation Matrix Element(R_{23})");ylim([-1,1]); grid on
-legend(["Desired", "Operated"])
-subplot(3, 3, 9)
-plot(time, data(:, 15), "k--", "LineWidth", 3); hold on
-plot(time, data(:, 24), "r"); hold off
-title("r{33}" ); xlabel("Time [sec]"); ylabel("Rotation Matrix Element(R_{33})");ylim([-1,1]); grid on
-legend(["Desired", "Operated"])
+f2 = figure("Name","End-effector Rotation");
+f2.WindowState = 'maximized';
+for i=1:9
+    subplot(3,3,i)
+    plot(time, data{1}(:, tmp_index(i)), "k--", "LineWidth", 3); hold on
+    for j=data_index
+        plot(time, data{j}(:, tmp_index(i)+9), "Color", Color(j,:),"LineWidth", 2); 
+    end
+    hold off
+    title(strcat('r_{', num2str(fix((i-1)/3)+1), num2str(rem(i-1,3)+1), '}')); 
+    xlabel("Time [sec]"); ylabel(strcat('Rotation Matrix Element(R_{', num2str(fix((i-1)/3)+1), num2str(rem(i-1,3)+1), '})')  );ylim([-1,1]); grid on
+    legend(["Desired", Name(data_index)],'Location','northeastoutside');
+end
+pause(1)
+saveas(gcf, strcat("plot figure/HW3/HW_", erase(num2str(data_index)," "), "(ori).svg"))
 
 
+f3 = figure("Name","Joint Angle");
+f3.WindowState = 'maximized';
+for i=1:7
+    subplot(7,1,i)
+    hold on
+    for j=data_index
+        plot(time, data{j}(:,24+i), "Color", Color(j,:), "LineWidth", 2);
+    end
+    hold off
+    title(strcat("q_", num2str(i))); xlabel("Time[sec]"); ylabel("Angle [rad]"); grid on; legend(Name(data_index), 'Location','northeastoutside')
+end
+pause(0.5)
+saveas(gcf, strcat("plot figure/HW3/HW_", erase(num2str(data_index)," "), "(joint).svg"))
 
-figure("Name","Joint Angle");
-subplot(7,1,1)
-plot(time, data(:,25), "r");
-title("q_1"); xlabel("Time[sec]"); ylabel("Angle [rad]"); grid on
-subplot(7,1,2)
-plot(time, data(:,26), "r");
-title("q_2"); xlabel("Time[sec]"); ylabel("Angle [rad]"); grid on
-subplot(7,1,3)
-plot(time, data(:,27), "r");
-title("q_3"); xlabel("Time[sec]"); ylabel("Angle [rad]"); grid on
-subplot(7,1,4)
-plot(time, data(:,28), "r");
-title("q_4"); xlabel("Time[sec]"); ylabel("Angle [rad]"); grid on
-subplot(7,1,5)
-plot(time, data(:,29), "r");
-title("q_5"); xlabel("Time[sec]"); ylabel("Angle [rad]"); grid on
-subplot(7,1,6)
-plot(time, data(:,30), "r");
-title("q_6"); xlabel("Time[sec]"); ylabel("Angle [rad]"); grid on
-subplot(7,1,7)
-plot(time, data(:,31), "r");
-title("q_7"); xlabel("Time[sec]"); ylabel("Angle [rad]"); grid on
 end
