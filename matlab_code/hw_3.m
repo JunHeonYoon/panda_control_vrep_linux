@@ -1,11 +1,11 @@
 clc; close all; clear all;
 
 hw_3_1 = false;
-hw_3_2 = false;
+hw_3_2 = true;
 hw_3_3 = false;
 hw_3_4 = false;
 
-hw_3_123 = false;
+hw_3_123 = true;
 hw_3_234 = true;
 
 

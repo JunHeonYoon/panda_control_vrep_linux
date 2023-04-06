@@ -1,7 +1,7 @@
 function hw3_plot(data_index, data)
 
 Name = ["HW 3-1", "HW 3-2", "HW 3-3", "HW 3-4"];
-time = (1:length(data{1}))*0.1;
+time = (1:length(data{1}))*0.01;
 Color = [0, 0.4470, 0.7410; 
          0.8500, 0.3250, 0.0980;
          0.4940, 0.1840, 0.5560;
@@ -35,7 +35,7 @@ end
 hold off
 title("Z"); xlabel("Time[sec]"); ylabel("Position [m]");ylim([0.57,0.68]); grid on
 legend(["Desired", Name(data_index)], 'Location','northeastoutside')
-pause(0.5)
+pause(1)
 saveas(gcf, strcat("plot figure/HW3/HW_", erase(num2str(data_index)," "), "(posi).svg"))
 
 
@@ -68,7 +68,7 @@ for i=1:7
     hold off
     title(strcat("q_", num2str(i))); xlabel("Time[sec]"); ylabel("Angle [rad]"); grid on; legend(Name(data_index), 'Location','northeastoutside')
 end
-pause(0.5)
+pause(1)
 saveas(gcf, strcat("plot figure/HW3/HW_", erase(num2str(data_index)," "), "(joint).svg"))
 
 end

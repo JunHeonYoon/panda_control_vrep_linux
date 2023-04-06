@@ -131,7 +131,7 @@ void ArmController::compute()
 					0, -1, 0,
 					-1, 0, 0,
 					0, 0, -1;
-		hw_3_2(target_x, 4.0);
+		hw_3_2(target_x, 3.0);
 	}
 	else if (control_mode_ == "hw_3_3")
 	{
@@ -476,7 +476,7 @@ void ArmController::hw_3_2(const Vector12d & target_x, double duration)
 
 	// desired joint velocity and joint position
 	Vector7d qd_desired = j_.transpose() * (j_*j_.transpose()).inverse() * x_error;
-	q_desired_ = q_ + qd_desired / hz_; 
+	q_desired_ = q_ + qd_desired ; 
 	// ----------------------------------------------------------------------------
 
 	// ----------------------------------------------------------------------------
