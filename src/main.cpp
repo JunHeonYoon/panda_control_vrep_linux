@@ -88,38 +88,17 @@ int main()
 				ac.setMode("hw_3_4");
 				break;	
 			case '5':
-				ac.setMode("hw_4_1");
+				ac.setMode("hw_5_1");
 				break;		
 			case '6':
-				ac.setMode("hw_4_2");
+				ac.setMode("hw_5_2");
+				break;
+			case '7':
+				ac.setMode("hw_6_1");
+				break;
+			case '8':
+				ac.setMode("hw_6_2");
 				break;			
-			// case '1':
-			// 	ac.setMode("hw_5_1");
-			// 	break;
-			// case '2':
-			// 	ac.setMode("hw_5_2_1");
-			// 	break;
-			// case '3':
-			// 	ac.setMode("hw_5_2_2");
-			// 	break;
-			// case '4':
-			// 	ac.setMode("hw_5_3_1");
-			// 	break;
-			// case '5':
-			// 	ac.setMode("hw_5_3_2");
-			// 	break;
-			// case '6':
-			// 	ac.setMode("hw_5_1");
-			// 	break;
-			// case '7':
-			// 	ac.setMode("hw_6_1_1");
-			// 	break;
-			// case '8':
-			// 	ac.setMode("hw_6_2_1");
-			// 	break;
-			// case '9':
-			// 	ac.setMode("hw_6_2_2");
-			// 	break;
 			case '\t':
 				if (is_simulation_run) {
 					cout << "Simulation Pause" << endl;
