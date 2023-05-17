@@ -93,6 +93,7 @@ class ArmController
 
 private:
 	MatrixXd jacobianFromqd(int mode); // mode=0 : end-effector, 1:COM of link
+	MatrixXd pseudoInvDamp(const MatrixXd original_mat);
 	void printState();
 	void moveJointPosition(const Vector7d &target_position, double duration);
 	void moveJointPositionTorque(const Vector7d &target_position, double duration);
@@ -104,18 +105,16 @@ private:
 	void hw_5_2(const Vector6d & target_x, double duration);
 	void hw_6_1(const Vector6d & target_x, double duration);
 	void hw_6_2(const Vector6d & target_x, double duration);
-	// void hw_4_1(const Vector6d & target_x, double duration);
-	// void hw_4_2(const Vector6d & target_x, double duration);
-	// void hw_5_1(const Vector7d & target_q, double duration);
-	// void hw_5_2_1(const Vector7d & target_q, double duration);
-	// void hw_5_2_2(const Vector7d & target_q, double duration);
-	// void hw_5_3_1(const Vector7d & target_q, double duration);
-	// void hw_5_3_2(const Vector7d & target_q, double duration);
-	// void hw_6_1_1(const Vector12d & target_x, double duration);
-	// void hw_6_1_2(const Vector12d & target_x, double duration);
-	// void hw_6_2_1(const Vector12d & target_x, double duration);
-	// void hw_6_2_2(const Vector12d & target_x, double duration);
-
+	void hw_7_1(const Vector7d &target_q, double duration);
+	void hw_7_2_1(const Vector7d &target_q, double duration);
+	void hw_7_2_2(const Vector7d &target_q, double duration);
+	void hw_7_3_1(const Vector7d &target_q, double duration);
+	void hw_7_3_2(const Vector7d &target_q, double duration);
+	void hw_8_1_1(const Vector12d & diff_target_x, double duration);
+	void hw_8_1_2(const Vector12d & diff_target_x, double duration);
+	void hw_8_2_1(const Vector12d & diff_target_x, double duration);
+	void hw_8_2_2(const Vector12d & diff_target_x, double duration);
+	
 public:
 	void readData(const Vector7d &position, const Vector7d &velocity, const Vector7d &torque);
 	void readData(const Vector7d &position, const Vector7d &velocity);
@@ -143,13 +142,15 @@ private:
 	const string hw_plot_file_names_[NUM_HW_PLOT]
 	{ "hw_3_1", "hw_3_2", "hw_3_3", "hw_3_4",
 	  "hw_5_1", "hw_5_2",
-	  "hw_6_1", "hw_6_2"};
+	  "hw_6_1", "hw_6_2",
+	  "hw_7_1", "hw_7_2_1", "hw_7_2_2", "hw_7_3_1", "hw_7_3_2",
+	  "hw_8_1_1", "hw_8_1_2", "hw_8_2_1", "hw_8_2_2",};
 
-	// void record(int file_number, double duration);
-	// void record(int file_number, double duration, const stringstream & ss);
+	
 	void recordHW3(int file_number, double duration, const Vector3d & x_desired, const Matrix3d & rotation_desired);
-	// void recordHw4(int file_number, double duration, const Vector6d & x_desired);
-	void recordHw5(int file_number, double duration, const Vector6d & x_desired);
-	void recordHw6(int file_number, double duration, const Vector6d & x_desired, const double h_2);
-	// void recordHW6(int file_number, double duration, const Vector3d & x_desired, const Matrix3d & rotation_desired);
+	void recordHW5(int file_number, double duration, const Vector6d & x_desired);
+	void recordHW6(int file_number, double duration, const Vector6d & x_desired, const double h_2);
+	void recordHW7(int file_number, double duration, const Vector7d & q_desired);
+	void recordHW8(int file_number, double duration, const Vector3d & x_desired, const Matrix3d & rotation_desired);
+
 };

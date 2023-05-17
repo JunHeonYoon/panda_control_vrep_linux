@@ -6,7 +6,7 @@ hw_3_3 = false;
 hw_3_4 = false;
 
 hw_3_123 = true;
-hw_3_234 = false;
+hw_3_234 = false;z
 
 
 data = cell(1,4);

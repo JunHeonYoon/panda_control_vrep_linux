@@ -37,7 +37,8 @@ for i=data_index
     plot(time, data{i}(:, 13), "Color", Color(i,:),"LineWidth", 2); hold on
 end
 hold off
-title("h_1"); xlabel("Time[sec]"); ylabel("Value"); grid on
+title("h_2"); xlabel("Time[sec]"); ylabel("Value"); grid on
+legend([Name(data_index)], 'Location','northeastoutside')
 pause(1)
 saveas(gcf, strcat("plot figure/HW6/HW_", erase(num2str(data_index)," "), "(posi).svg"))
 
@@ -74,7 +75,8 @@ for i=data_index
     plot(time, data{i}(:, 13), "Color", Color(i,:),"LineWidth", 2); hold on
 end
 hold off
-title("h_1"); xlabel("Time[sec]"); ylabel("Value"); grid on
+title("h_2"); xlabel("Time[sec]"); ylabel("Value"); grid on
+legend([Name(data_index)], 'Location','northeastoutside')
 pause(1)
 saveas(gcf, strcat("plot figure/HW6/HW_", erase(num2str(data_index)," "), "-lin4(posi).svg"))
 
