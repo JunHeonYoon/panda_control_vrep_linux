@@ -187,33 +187,33 @@ void ArmController::compute()
 	}
 	else if (control_mode_ == "hw_7_1")
 	{
-		Vector7d target_q;
-		target_q << 0, 0, 0, (-25*M_PI/180), 0, M_PI/2, 0;
-		hw_7_1(target_q, 4.0); 
+		Vector7d diff_target_q;
+		diff_target_q << 0, 0, 0, (5*M_PI/180), 0, 0, 0;
+		hw_7_1(diff_target_q, 4.0); 
 	}
 	else if (control_mode_ == "hw_7_2_1")
 	{
-		Vector7d target_q;
-		target_q << 0, 0, 0, (-25*M_PI/180), 0, M_PI/2, 0;
-		hw_7_2_1(target_q, 4.0); 
+		Vector7d diff_target_q;
+		diff_target_q << 0, 0, 0, (5*M_PI/180), 0, 0, 0;
+		hw_7_2_1(diff_target_q, 4.0); 
 	}
 	else if (control_mode_ == "hw_7_2_2")
 	{
-		Vector7d target_q;
-		target_q << 0, 0, 0, (-60*M_PI/180), 0, M_PI/2, 0;
-		hw_7_2_2(target_q, 4.0); 
+		Vector7d diff_target_q;
+		diff_target_q << 0, 0, 0, (-30*M_PI/180), 0, 0, 0;
+		hw_7_2_2(diff_target_q, 4.0); 
 	}
 	else if (control_mode_ == "hw_7_3_1")
 	{
-		Vector7d target_q;
-		target_q << 0, 0, 0, (-25*M_PI/180), 0, M_PI/2, 0;
-		hw_7_3_1(target_q, 4.0); 
+		Vector7d diff_target_q;
+		diff_target_q << 0, 0, 0, (5*M_PI/180), 0, 0, 0;
+		hw_7_3_1(diff_target_q, 4.0); 
 	}
 	else if (control_mode_ == "hw_7_3_2")
 	{
-		Vector7d target_q;
-		target_q << 0, 0, 0, (-60*M_PI/180), 0, M_PI/2, 0;
-		hw_7_3_2(target_q, 4.0); 
+		Vector7d diff_target_q;
+		diff_target_q << 0, 0, 0, (-30*M_PI/180), 0, 0, 0;
+		hw_7_3_2(diff_target_q, 4.0); 
 	}
 	else if (control_mode_ == "hw_8_1_1")
 	{
@@ -947,7 +947,7 @@ void ArmController::hw_6_2(const Vector6d & target_x, double duration)
 	// ----------------------------------------------------------------------------
 }
 
-void ArmController::hw_7_1(const Vector7d &target_q, double duration)
+void ArmController::hw_7_1(const Vector7d &diff_target_q, double duration)
 {
 	// Simple PD controller
 
@@ -963,7 +963,7 @@ void ArmController::hw_7_1(const Vector7d &target_q, double duration)
 	Vector7d q_desired, qd_desired;
 	qd_desired = Vector7d::Zero();
 	if(play_time_ < control_start_time_ + duration/2)  q_desired = q_init_;
-	else q_desired = target_q;
+	else q_desired = q_init_ + diff_target_q;
 
 	q_desired_ = q_desired;
 
@@ -974,7 +974,7 @@ void ArmController::hw_7_1(const Vector7d &target_q, double duration)
 	recordHW7(8, duration, q_desired);
 }
 
-void ArmController::hw_7_2_1(const Vector7d &target_q, double duration)
+void ArmController::hw_7_2_1(const Vector7d &diff_target_q, double duration)
 {
 	// Simple PD controller
 
@@ -990,7 +990,7 @@ void ArmController::hw_7_2_1(const Vector7d &target_q, double duration)
 	Vector7d q_desired, qd_desired;
 	qd_desired = Vector7d::Zero();
 	if(play_time_ < control_start_time_ + duration/2)  q_desired = q_init_;
-	else q_desired = target_q;
+	else q_desired = q_init_ + diff_target_q;
 
 	// Apply force
 	torque_desired_ = ( kp*( q_desired - q_ ) + kv*( qd_desired - qdot_ ) ) + g_;
@@ -999,7 +999,7 @@ void ArmController::hw_7_2_1(const Vector7d &target_q, double duration)
 	recordHW7(9, duration, q_desired);
 }
 
-void ArmController::hw_7_2_2(const Vector7d &target_q, double duration)
+void ArmController::hw_7_2_2(const Vector7d &diff_target_q, double duration)
 {
 	// Simple PD controller
 
@@ -1016,9 +1016,9 @@ void ArmController::hw_7_2_2(const Vector7d &target_q, double duration)
 	for (int i = 0; i < 7; i++)
 	{
 		qd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,
-			control_start_time_ + duration, q_init_(i), target_q(i), 0, 0);
+			control_start_time_ + duration, q_init_(i), (q_init_+diff_target_q)(i), 0, 0);
 		q_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,
-			control_start_time_ + duration, q_init_(i), target_q(i), 0, 0);
+			control_start_time_ + duration, q_init_(i), (q_init_+diff_target_q)(i), 0, 0);
 	}
 
 	// Apply force
@@ -1028,7 +1028,7 @@ void ArmController::hw_7_2_2(const Vector7d &target_q, double duration)
 	recordHW7(10, duration, q_desired);
 }
 
-void ArmController::hw_7_3_1(const Vector7d &target_q, double duration)
+void ArmController::hw_7_3_1(const Vector7d &diff_target_q, double duration)
 {
 	// Simple PD controller
 
@@ -1044,7 +1044,7 @@ void ArmController::hw_7_3_1(const Vector7d &target_q, double duration)
 	Vector7d q_desired, qd_desired;
 	qd_desired = Vector7d::Zero();
 	if(play_time_ < control_start_time_ + duration/2)  q_desired = q_init_;
-	else q_desired = target_q;
+	else q_desired = q_init_ + diff_target_q;
 
 	
 
@@ -1055,7 +1055,7 @@ void ArmController::hw_7_3_1(const Vector7d &target_q, double duration)
 	recordHW7(11, duration, q_desired);
 }
 
-void ArmController::hw_7_3_2(const Vector7d &target_q, double duration)
+void ArmController::hw_7_3_2(const Vector7d &diff_target_q, double duration)
 {
 	// Simple PD controller
 
@@ -1072,9 +1072,9 @@ void ArmController::hw_7_3_2(const Vector7d &target_q, double duration)
 	for (int i = 0; i < 7; i++)
 	{
 		qd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,
-			control_start_time_ + duration, q_init_(i), target_q(i), 0, 0);
+			control_start_time_ + duration, q_init_(i), (q_init_+diff_target_q)(i), 0, 0);
 		q_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,
-			control_start_time_ + duration, q_init_(i), target_q(i), 0, 0);
+			control_start_time_ + duration, q_init_(i), (q_init_+diff_target_q)(i), 0, 0);
 	}
 
 	
@@ -1120,8 +1120,8 @@ void ArmController::hw_8_1_1(const Vector12d & diff_target_x, double duration)
 	// gain for closed loop
 	Matrix6d Kp, Kv;
 	Vector6d Kp_diag, Kv_diag;
-	Kp_diag << 50,50,50,10,10,10;
-	Kv_diag << 5,5,5,1,1,1;
+	Kp_diag << 30*Vector6d::Ones();
+	Kv_diag << 1*Vector6d::Ones();
 	Kp = Kp_diag.asDiagonal();
 	Kv = Kv_diag.asDiagonal();
 
@@ -1196,8 +1196,8 @@ void ArmController::hw_8_1_2(const Vector12d & diff_target_x, double duration)
 	// gain for closed loop
 	Matrix6d Kp, Kv;
 	Vector6d Kp_diag, Kv_diag;
-	Kp_diag << 50,50,50,10,10,10;
-	Kv_diag << 5,5,5,1,1,1;
+	Kp_diag << 30*Vector6d::Ones();
+	Kv_diag << 1*Vector6d::Ones();
 	Kp = Kp_diag.asDiagonal();
 	Kv = Kv_diag.asDiagonal();
 

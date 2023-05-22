@@ -8,6 +8,15 @@ Color = [0, 0.4470, 0.7410;
          0.4660, 0.6740, 0.1880];
 tmp_index = [7 10 13 8 11 14 9 12 15];
 
+box_data = cell(size(data));
+for i=1:length(box_data)
+    for j=1:3
+        box_data{i}(1,j) = mean(data{i}(:,3+j)) - min(data{i}(:,3+j));
+        box_data{i}(2,j) = max(data{i}(:,3+j)) - mean(data{i}(:,3+j));
+        box_data{i}(3,j) = mean(data{i}(:,3+j));
+    end
+end
+
 
 f1 = figure("Name","End-effector Position");
 f1.WindowState = 'maximized';
@@ -17,7 +26,8 @@ for i=data_index
     plot(time, data{i}(:, 4), "Color", Color(i,:),"LineWidth", 2); 
 end
 hold off
-title("X" ); xlabel("Time [sec]"); ylabel("Position [m]"); grid on
+xlim tight; ylim([box_data{data_index(1)}(3,1) - max(box_data{data_index(1)}(1,:)), box_data{data_index(1)}(3,1) + max(box_data{data_index(1)}(2,:))])
+title("X"); xlabel("Time [sec]"); ylabel("Position [m]"); grid on
 legend(["Desired", Name(data_index)], 'Location','northeastoutside')
 subplot(3, 1, 2)
 plot(time, data{data_index(1)}(:, 2), "k--", "LineWidth", 3); hold on
@@ -25,6 +35,7 @@ for i=data_index
     plot(time, data{i}(:, 5), "Color", Color(i,:),"LineWidth", 2); 
 end
 hold off
+xlim tight; ylim([box_data{data_index(1)}(3,2) - max(box_data{data_index(1)}(1,:)), box_data{data_index(1)}(3,2) + max(box_data{data_index(1)}(2,:))])
 title("Y"); xlabel("Time[sec]"); ylabel("Position [m]"); grid on
 legend(["Desired", Name(data_index)], 'Location','northeastoutside')
 subplot(3, 1, 3)
@@ -33,7 +44,8 @@ for i=data_index
     plot(time, data{i}(:, 6), "Color", Color(i,:),"LineWidth", 2); 
 end
 hold off
-title("Z"); xlabel("Time[sec]"); ylabel("Position [m]");ylim([0.57,0.68]); grid on
+xlim tight; ylim([box_data{data_index(1)}(3,3) - max(box_data{data_index(1)}(1,:)), box_data{data_index(1)}(3,3) + max(box_data{data_index(1)}(2,:))])
+title("Z"); xlabel("Time[sec]"); ylabel("Position [m]"); grid on
 legend(["Desired", Name(data_index)], 'Location','northeastoutside')
 pause(1)
 saveas(gcf, strcat("plot figure/HW8/HW_", erase(num2str(data_index)," "), "(posi).svg"))
@@ -57,18 +69,18 @@ pause(1)
 saveas(gcf, strcat("plot figure/HW8/HW_", erase(num2str(data_index)," "), "(ori).svg"))
 
 
-f3 = figure("Name","Joint Angle");
-f3.WindowState = 'maximized';
-for i=1:7
-    subplot(7,1,i)
-    hold on
-    for j=data_index
-        plot(time, data{j}(:,24+i), "Color", Color(j,:), "LineWidth", 2);
-    end
-    hold off
-    title(strcat("q_", num2str(i))); xlabel("Time[sec]"); ylabel("Angle [rad]"); grid on; legend(Name(data_index), 'Location','northeastoutside')
-end
-pause(1)
-saveas(gcf, strcat("plot figure/HW8/HW_", erase(num2str(data_index)," "), "(joint).svg"))
+% f3 = figure("Name","Joint Angle");
+% f3.WindowState = 'maximized';
+% for i=1:7
+%     subplot(7,1,i)
+%     hold on
+%     for j=data_index
+%         plot(time, data{j}(:,24+i), "Color", Color(j,:), "LineWidth", 2);
+%     end
+%     hold off
+%     title(strcat("q_", num2str(i))); xlabel("Time[sec]"); ylabel("Angle [rad]"); grid on; legend(Name(data_index), 'Location','northeastoutside')
+% end
+% pause(1)
+% saveas(gcf, strcat("plot figure/HW8/HW_", erase(num2str(data_index)," "), "(joint).svg"))
 
 end

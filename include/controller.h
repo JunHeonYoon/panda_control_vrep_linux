@@ -105,11 +105,11 @@ private:
 	void hw_5_2(const Vector6d & target_x, double duration);
 	void hw_6_1(const Vector6d & target_x, double duration);
 	void hw_6_2(const Vector6d & target_x, double duration);
-	void hw_7_1(const Vector7d &target_q, double duration);
-	void hw_7_2_1(const Vector7d &target_q, double duration);
-	void hw_7_2_2(const Vector7d &target_q, double duration);
-	void hw_7_3_1(const Vector7d &target_q, double duration);
-	void hw_7_3_2(const Vector7d &target_q, double duration);
+	void hw_7_1(const Vector7d &diff_target_q, double duration);
+	void hw_7_2_1(const Vector7d &diff_target_q, double duration);
+	void hw_7_2_2(const Vector7d &diff_target_q, double duration);
+	void hw_7_3_1(const Vector7d &diff_target_q, double duration);
+	void hw_7_3_2(const Vector7d &diff_target_q, double duration);
 	void hw_8_1_1(const Vector12d & diff_target_x, double duration);
 	void hw_8_1_2(const Vector12d & diff_target_x, double duration);
 	void hw_8_2_1(const Vector12d & diff_target_x, double duration);
