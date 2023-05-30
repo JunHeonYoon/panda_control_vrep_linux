@@ -89,19 +89,25 @@ void VRepBridge::write()
 		}
 		// simxSetJointTargetPosition(clientID_, gripperHandle_[0], desired_gq_(0), simx_opmode_streaming);
 		// simxSetJointTargetPosition(clientID_, gripperHandle_[1], desired_gq_(1), simx_opmode_streaming);
-		for (size_t i = 0; i < 2; i++)
-		{
-			simxFloat velocityLimit;
+		// for (size_t i = 0; i < 2; i++)
+		// {
+		// 	simxFloat velocityLimit;
 
-			if (desired_gforce_(i) >= 0.0)
-				velocityLimit = 10e10f;
-			else
-				velocityLimit = -10e10f;
+		// 	if (desired_gforce_(i) >= 0.0)
+		// 		velocityLimit = 10e10f;
+		// 	else
+		// 		velocityLimit = -10e10f;
 
-			simxSetJointTargetVelocity(clientID_, gripperHandle_[i], velocityLimit, simx_opmode_streaming);
-			simxSetJointForce(clientID_, gripperHandle_[i], static_cast<float>(abs(desired_gforce_(i))), simx_opmode_streaming);
+		// 	simxSetJointTargetVelocity(clientID_, gripperHandle_[i], velocityLimit, simx_opmode_streaming);
+		// 	simxSetJointForce(clientID_, gripperHandle_[i], static_cast<float>(abs(desired_gforce_(i))), simx_opmode_streaming);
 
-		}
+		// }
+		// simxSetJointTargetVelocity(clientID_, gripperHandle_[1], desired_gq_dot_(1), simx_opmode_streaming);
+		simxSetJointTargetPosition(clientID_, gripperHandle_[1], desired_gq_(1)*2, simx_opmode_streaming);
+		// simxSetJointTargetVelocity(clientID_, gripperHandle_[1], desired_gq_dot_(1), simx_opmode_streaming);
+		float posi;
+		simxGetJointPosition(clientID_, gripperHandle_[1], &posi, simx_opmode_streaming);
+		simxSetJointTargetPosition(clientID_, gripperHandle_[0], posi*0.5, simx_opmode_streaming);
 		break;
 	}
 	case CTRL_TORQUE:
@@ -162,10 +168,15 @@ void VRepBridge::setDesiredPosition(const Eigen::Matrix<double, DOF, 1>& desired
 	desired_q_ = desired_q;
 }
 
-// void VRepBridge::setGripperDesiredPosition(const Eigen::Matrix<double, 2, 1> & desired_gq)
-// {
-// 	desired_gq_ = desired_gq;
-// }
+void VRepBridge::setGripperDesiredPosition(const Eigen::Matrix<double, 2, 1> & desired_gq)
+{
+	desired_gq_ = desired_gq;
+}
+
+void VRepBridge::setGripperDesiredVelocity(const Eigen::Matrix<double, 2, 1> & desired_gq_dot)
+{
+	desired_gq_dot_ = desired_gq_dot;
+}
 
 void VRepBridge::setGripperDesiredForce(const Eigen::Matrix<double, 2, 1> & desired_gforce)
 {

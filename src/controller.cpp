@@ -119,14 +119,24 @@ void ArmController::compute()
 	else if(control_mode_ == "gripper_open")
 	{ 
 		Vector2d target_gripper_position;
-		target_gripper_position << 0.038, 0.038;
-		moveGripperPositionForce(target_gripper_position, 1);   
+		target_gripper_position << 0.04, 0.04;
+		// moveGripperPositionForce(target_gripper_position, 1);
+		moveGripperPosition(target_gripper_position, 1);
+
+		// Vector2d target_gripper_velocity;
+		// target_gripper_velocity << 0.02, 0.02;
+		// setGripperVelocity(target_gripper_velocity, 3);
 	}
 	else if(control_mode_ == "gripper_close")
 	{ 
 		Vector2d target_gripper_position;
-		target_gripper_position << -0.2, -0.2;
-		moveGripperPositionForce(target_gripper_position, 1);  
+		target_gripper_position << 0.0, 0.0;
+		// moveGripperPositionForce(target_gripper_position, 1); 
+		moveGripperPosition(target_gripper_position, 1);  
+
+		// Vector2d target_gripper_velocity;
+		// target_gripper_velocity << -0.02, -0.02;
+		// setGripperVelocity(target_gripper_velocity, 3);
 	}
 	else if(control_mode_ == "pick_obstacle")
 	{
@@ -167,114 +177,7 @@ void ArmController::compute()
 			0, 0, -1;
 		simpleJacobianControl(target_x, 2.0);
 	}
-	else if (control_mode_ == "feedback_jacobian")
-	{
-		Vector12d target_x;
-		target_x << 0.25, 0.28, 0.65,
-			0, -1, 0,
-			-1, 0, 0,
-			0, 0, -1;
-		feedbackJacobianControl(target_x, 2.0);
-	}
-	else if (control_mode_ == "CLIK")
-	{
-		Vector12d target_x;
-		target_x << 0.25, 0.28, 0.65,
-			0, -1, 0,
-			-1, 0, 0,
-			0, 0, -1;
-		CLIK(target_x, 2.0);
-	}
-	else if (control_mode_ == "hw_2_1")
-	{
-		Vector12d target_x;
-		target_x << 0.25, 0.28, 0.65,
-			1, 0, 0,
-			0, -1, 0,
-			0, 0, -1;
-		hw_2_1(target_x, 4.0);
-	}
-	else if (control_mode_ == "hw_2_2")
-	{
-		Vector12d target_x;
-		target_x << 0.25, 0.28, 0.65,
-			1, 0, 0,
-			0, -1, 0,
-			0, 0, -1;
-		hw_2_2(target_x, 4.0);
-	}
-	else if (control_mode_ == "hw_2_3")
-	{
-		Vector12d target_x;
-		target_x << 0.25, 0.28, 0.65,
-			1, 0, 0,
-			0, -1, 0,
-			0, 0, -1;
-		hw_2_3(target_x, 4.0);
-	}
-	else if (control_mode_ == "hw_3_1")
-	{
-		Vector6d target_x;
-		target_x << 0.25,  0.28, 0.65,
-					0.00, -0.15, 0.60;
-		hw_3_1(target_x, 4.0);
-	}
-	else if (control_mode_ == "hw_3_2")
-	{
-		Vector6d target_x;
-		target_x << 0.25,  0.28, 0.65,
-					0.00, -0.15, 0.60;
-		hw_3_2(target_x, 4.0);
-	}
-	else if (control_mode_ == "hw_3_3")
-	{
-		Vector6d target_x;
-		target_x << 0.25,  0.28, 0.65,
-					0.00, -0.15, 0.60;
-		hw_3_3(target_x, 4.0, false); // true : hw_3_3_1, false : hw_3_3_2
-	}
-	else if (control_mode_ == "hw_4_1")
-	{
-		Vector7d target_q;
-		target_q << 0.0, 0.0, 0.0, -M_PI*(25./180.), 0.0, M_PI / 2, 0; 
-		hw_4_1(target_q, 4.0);
-	}
-	else if (control_mode_ == "hw_4_2")
-	{
-		Vector7d target_q;
-		// target_q << 0.0, 0.0, 0.0, -M_PI*(25./180.), 0.0, M_PI / 2, 0;
-		target_q << 0.0, 0.0, 0.0, -M_PI/3., 0.0, M_PI / 2, 0; 
-		hw_4_2(target_q, 4.0, false);
-	}
-	else if (control_mode_ == "hw_4_3")
-	{
-		Vector7d target_q;
-		target_q << 0.0, 0.0, 0.0, -M_PI*(25./180.), 0.0, M_PI / 2, 0;
-		// target_q << 0.0, 0.0, 0.0, -M_PI/3., 0.0, M_PI / 2, 0; 
-		hw_4_3(target_q, 4.0, true);
-	}
-	else if (control_mode_ == "hw_5_1")
-	{
-		Vector12d target_x;
-		target_x << x_init_, rotation_init_.col(0), rotation_init_.col(1), rotation_init_.col(2);
-		// target_x(1) += 0.02;
-		target_x(1) += 0.1; 
-		hw_5_1(target_x, 4.0, false);
-	}
-	else if (control_mode_ == "hw_5_2")
-	{
-		Vector12d target_x;
-		target_x << 0.3, -0.012, 0.52,
-				rotation_init_.col(0), rotation_init_.col(1), rotation_init_.col(2);
-		hw_5_2(target_x, 4.0);
-	}
-	else if (control_mode_ == "hw_7")
-	{
-		Vector12d target_x;
-		target_x << 0.3, -0.012, 0.52,
-				rotation_init_.col(0), rotation_init_.col(1), rotation_init_.col(2);
-		hw_7(target_x, 8.0);
-	}
+	
 	else
 	{
 		torque_desired_ = g_;
@@ -386,6 +289,9 @@ void ArmController::printState()
 		cout << std::fixed << std::setprecision(3) << gforce_desired_.transpose() << endl;
 		cout << "FT data:\t";
 		cout << std::fixed << std::setprecision(3) << tip_ft_.transpose() << endl;
+		cout << "gripper P gain :" << std::endl;
+		cout<< std::fixed << std::setprecision(3) << (gq_desired_(0)-gq_((0)))/gforce_(0) <<endl;
+		cout<< std::fixed << std::setprecision(3) << (gq_desired_(1)-gq_((1)))/gforce_(1) <<endl;
 		
 		if(control_mode_ == "hw_3_1")
 		{
@@ -413,19 +319,26 @@ void ArmController::moveJointPosition(const Vector7d & target_position, double d
 		control_start_time_ + duration, q_init_, target_position, zero_vector, zero_vector);
 }
 
-// void ArmController::moveGripperPosition(const Vector2d & target_position, double duration)
-// {
-// 	Vector2d zero_vector;
-// 	zero_vector.setZero();
-// 	gq_desired_ = DyrosMath::cubicVector<2>(play_time_,
-// 		control_start_time_,
-// 		control_start_time_ + duration, gq_init_, target_position, zero_vector, zero_vector);
-// }
+void ArmController::moveGripperPosition(const Vector2d & target_position, double duration)
+{
+	Vector2d zero_vector;
+	zero_vector.setZero();
+	gq_desired_ = DyrosMath::cubicVector<2>(play_time_,
+		control_start_time_,
+		control_start_time_ + duration, gq_init_, target_position, zero_vector, zero_vector);
+}
 
 void ArmController::setGripperForce(const Vector2d & target_force, double duration)
 {
 	if(play_time_ < control_start_time_ + duration) gforce_desired_ = target_force;
 	else gforce_desired_.setZero();
+}
+
+void ArmController::setGripperVelocity(const Vector2d &target_velocity, double duration)
+{
+	if(play_time_ < control_start_time_ + duration) gqdot_desired_ = target_velocity;
+	else gqdot_desired_.setZero();
+	
 }
 
 void ArmController::moveJointPositionTorque(const Vector7d &target_position, double duration)
@@ -468,11 +381,11 @@ void ArmController::moveGripperPositionForce(const Vector2d &target_position, do
 	Matrix2d gripper_m;
 	gripper_m = Matrix2d::Identity() * 0.02;
 	gforce_desired_ = gripper_m * (kp*(gq_cubic - gq_) + kv*(gqdot_cubic - gqdot_));
-	for(size_t i =0;i<2;i++)
-	{
-		if (gforce_desired_(i) > 10) gforce_desired_(i) = 10;
-		else if(gforce_desired_(i) < -10) gforce_desired_(i) = -10;
-	}
+	// for(size_t i =0;i<2;i++)
+	// {
+	// 	if (gforce_desired_(i) > 10) gforce_desired_(i) = 10;
+	// 	else if(gforce_desired_(i) < -10) gforce_desired_(i) = -10;
+	// }
 }
 
 void ArmController::simpleJacobianControl(const Vector12d & target_x, double duration)
@@ -1473,10 +1386,16 @@ const Vector7d & ArmController::getDesiredTorque()
 	return torque_desired_;
 }
 
-// const Vector2d & ArmController::getDesiredGripperPosition()
-// {
-// 	return gq_desired_;
-// }
+const Vector2d & ArmController::getDesiredGripperPosition()
+{
+	return gq_desired_;
+}
+
+const Vector2d & ArmController::getDesiredGripperVelocity()
+{
+	return gqdot_desired_;
+}
+
 
 const Vector2d & ArmController::getDesiredGripperForce()
 {
@@ -1495,6 +1414,7 @@ void ArmController::initPosition()
 	gq_init_ = gq_;
 	gqdot_init_ = gqdot_;
 	gq_desired_ = gq_init_;
+	gqdot_desired_ = gqdot_init_;
 	gforce_init_ = gforce_;
 	gforce_desired_ = gforce_init_;
 }

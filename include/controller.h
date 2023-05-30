@@ -39,6 +39,7 @@ class ArmController
 	Vector7d q_desired_; // Control value
 	Vector7d torque_desired_;
 	Vector2d gq_desired_;
+	Vector2d gqdot_desired_;
 	Vector2d gforce_desired_;
 
 	// Task space
@@ -105,8 +106,9 @@ private:
 	void printState();
 	void moveJointPosition(const Vector7d &target_position, double duration);
 	void moveJointPositionTorque(const Vector7d &target_position, double duration);
-	// void moveGripperPosition(const Vector2d &target_position, double duration);
+	void moveGripperPosition(const Vector2d &target_position, double duration);
 	void setGripperForce(const Vector2d &target_force, double duration);
+	void setGripperVelocity(const Vector2d &target_velocity, double duration);
 	void moveGripperPositionForce(const Vector2d &target_position, double duration);
 	void simpleJacobianControl(const Vector12d &target_x, double duration);
 	void feedbackJacobianControl(const Vector12d & target_x, double duration);
@@ -135,7 +137,8 @@ public:
 
 	const Vector7d & getDesiredPosition();
 	const Vector7d & getDesiredTorque();
-	// const Vector2d & getDesiredGripperPosition();
+	const Vector2d & getDesiredGripperPosition();
+	const Vector2d & getDesiredGripperVelocity();
 	const Vector2d & getDesiredGripperForce();
 	const Vector6d & getFTSensorData();
 

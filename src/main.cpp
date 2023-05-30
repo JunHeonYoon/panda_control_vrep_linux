@@ -157,8 +157,9 @@ int main()
 			ac.compute();
 			vb.setDesiredPosition(ac.getDesiredPosition());
 			vb.setDesiredTorque(ac.getDesiredTorque());
-			// vb.setGripperDesiredPosition(ac.getDesiredGripperPosition());
-			vb.setGripperDesiredForce(ac.getDesiredGripperForce());
+			vb.setGripperDesiredPosition(ac.getDesiredGripperPosition());
+			// vb.setGripperDesiredVelocity(ac.getDesiredGripperVelocity());
+			// vb.setGripperDesiredForce(ac.getDesiredGripperForce());
 		
 			vb.write();
 			vb.simLoop();
