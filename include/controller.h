@@ -114,6 +114,10 @@ private:
 	void hw_8_1_2(const Vector12d & diff_target_x, double duration);
 	void hw_8_2_1(const Vector12d & diff_target_x, double duration);
 	void hw_8_2_2(const Vector12d & diff_target_x, double duration);
+	void hw_10_1_1(const Vector12d & diff_target_x, double duration);
+	void hw_10_1_2(const Vector12d & diff_target_x, double duration);
+	void hw_10_2(const Vector3d & target_x, double duration);
+	void hw_10_3(const Vector3d & target_x, double duration);
 	
 public:
 	void readData(const Vector7d &position, const Vector7d &velocity, const Vector7d &torque);
@@ -137,14 +141,15 @@ public:
     void compute();
 private:
 	ofstream debug_file_;
-	constexpr static int NUM_HW_PLOT{20};
+	constexpr static int NUM_HW_PLOT{21};
 	ofstream hw_plot_files_[NUM_HW_PLOT];
 	const string hw_plot_file_names_[NUM_HW_PLOT]
-	{ "hw_3_1", "hw_3_2", "hw_3_3", "hw_3_4",
-	  "hw_5_1", "hw_5_2",
-	  "hw_6_1", "hw_6_2",
-	  "hw_7_1", "hw_7_2_1", "hw_7_2_2", "hw_7_3_1", "hw_7_3_2",
-	  "hw_8_1_1", "hw_8_1_2", "hw_8_2_1", "hw_8_2_2",};
+	{ "hw_3_1", "hw_3_2", "hw_3_3", "hw_3_4", // 0,1,2,3
+	  "hw_5_1", "hw_5_2", // 4,5
+	  "hw_6_1", "hw_6_2", // 6,7
+	  "hw_7_1", "hw_7_2_1", "hw_7_2_2", "hw_7_3_1", "hw_7_3_2", // 8,9,10,11,12
+	  "hw_8_1_1", "hw_8_1_2", "hw_8_2_1", "hw_8_2_2", // 13,14,15,16
+	  "hw_10_1_1", "hw_10_1_2","hw_10_2", "hw_10_3"}; // 17,18,19,20
 
 	
 	void recordHW3(int file_number, double duration, const Vector3d & x_desired, const Matrix3d & rotation_desired);
@@ -152,5 +157,7 @@ private:
 	void recordHW6(int file_number, double duration, const Vector6d & x_desired, const double h_2);
 	void recordHW7(int file_number, double duration, const Vector7d & q_desired);
 	void recordHW8(int file_number, double duration, const Vector3d & x_desired, const Matrix3d & rotation_desired);
+	void recordHW10(int file_number, double duration, const Vector3d & x_desired, const Matrix3d & rotation_desired);
+	void recordHW10(int file_number, double duration, const Vector3d & x_desired, const Matrix3d & rotation_desired, const Vector3d & xd_desired);
 
 };

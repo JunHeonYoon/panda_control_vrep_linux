@@ -117,7 +117,8 @@ void ArmController::compute()
 		Vector7d target_position;
 		// target_position << 0.0, 0.0, 0.0, -M_PI / 2., 0.0, M_PI / 2, 0;
 		// target_position << 0.0, 0.0, 0.0, -M_PI / 6., 0.0, M_PI / 2, 0;
-		target_position << 0.0, 0.0, 0.0, -M_PI / 2., 0.0, M_PI / 2, 0;
+		// target_position << 0.0, 0.0, 0.0, -M_PI / 2., 0.0, M_PI / 2, 0;
+		target_position << 0.0, -M_PI / 3, 0.0, -M_PI / 2., 0.0, M_PI / 6, 0;
 		moveJointPositionTorque(target_position, 1.0);     
 		// moveJointPosition(target_position, 1.0);                
 	}
@@ -251,7 +252,36 @@ void ArmController::compute()
 						0, 0, 0;
 		hw_8_2_2(diff_target_x, 4.0);
 	}
-	
+	else if (control_mode_ == "hw_10_1_1")
+	{
+		Vector12d diff_target_x;
+		diff_target_x << 0, 0.02, 0,
+					  	0, 0, 0,
+						0, 0, 0,
+						0, 0, 0;
+		hw_10_1_1(diff_target_x, 4.0);
+	}
+	else if (control_mode_ == "hw_10_1_2")
+	{
+		Vector12d diff_target_x;
+		diff_target_x << 0, 0.1, 0,
+						0, 0, 0,
+						0, 0, 0,
+						0, 0, 0;
+		hw_10_1_2(diff_target_x, 4.0);
+	}
+	else if (control_mode_ == "hw_10_2")
+	{
+		Vector3d target_x;  // only for position
+		target_x << 0.3, -0.012, 0.52;
+		hw_10_2(target_x, 4.0);
+	}
+	else if (control_mode_ == "hw_10_3")
+	{
+		Vector3d target_x;  // only for position
+		target_x << 0.3, -0.012, 0.52;
+		hw_10_3(target_x, 8.0);
+	}
 	
 	else
 	{
@@ -327,6 +357,32 @@ void ArmController::recordHW8(int file_number, double duration, const Vector3d &
 	}
 }
 
+void ArmController::recordHW10(int file_number, double duration, const Vector3d & x_desired, const Matrix3d & rotation_desired)
+{
+	if (play_time_ < control_start_time_ + duration + 1.0)
+	{
+		hw_plot_files_[file_number] 
+		<< x_desired.transpose()<< " " << x_.transpose() << " " 
+		<< rotation_desired.col(0).transpose() << " " << rotation_desired.col(1).transpose() << " " << rotation_desired.col(2).transpose() << " "
+		<< rotation_.col(0).transpose() << " " << rotation_.col(1).transpose() << " " << rotation_.col(2).transpose() << " " 
+		<< q_.transpose()
+		<< endl;
+	}
+}
+
+void ArmController::recordHW10(int file_number, double duration, const Vector3d & x_desired, const Matrix3d & rotation_desired, const Vector3d & xd_desired)
+{
+	if (play_time_ < control_start_time_ + duration + 1.0)
+	{
+		hw_plot_files_[file_number] 
+		<< x_desired.transpose()<< " " << x_.transpose() << " " 
+		<< rotation_desired.col(0).transpose() << " " << rotation_desired.col(1).transpose() << " " << rotation_desired.col(2).transpose() << " "
+		<< rotation_.col(0).transpose() << " " << rotation_.col(1).transpose() << " " << rotation_.col(2).transpose() << " " 
+		<< xd_desired.transpose()<< " " << x_dot_.head(3).transpose() << " " 
+		<< q_.transpose()
+		<< endl;
+	}
+}
 
 void ArmController::printState()
 {
@@ -1368,6 +1424,302 @@ void ArmController::hw_8_2_2(const Vector12d & diff_target_x, double duration)
 	// ----------------------------------------------------------------------------
 }
 
+void ArmController::hw_10_1_1(const Vector12d &diff_target_x, double duration)
+{
+	//------------------------------------------------------------------------
+	Vector6d xd_desired = Vector6d::Zero(); // v, w
+
+	Vector3d x_desired; // only for position
+	if(play_time_ < control_start_time_ + duration/2)  x_desired = x_init_;
+	else x_desired = x_init_ + diff_target_x.head(3);
+
+	// Get target rotation matrix
+	Matrix3d rotation;
+	for (int i = 0; i < 3; i++) 
+	{
+		rotation.block<3, 1>(0, i) = diff_target_x.segment<3>(3 + i * 3);
+	}
+
+	// desired orientation
+	Matrix3d rotation_desired;
+	if(play_time_ < control_start_time_ + duration/2)  rotation_desired = rotation_init_;
+	else rotation_desired = rotation_init_ + rotation;
+
+	//---------------------------------------------------------------------------
+	
+	//---------------------------------------------------------------------------
+	// After calcuate desired pose and velocity, 
+	// calculate desired EE force and null-space torque for closed loop.
+
+	// gain for closed loop
+	Matrix6d Kp_op, Kv_op;
+	Vector6d Kp_op_diag,  Kv_op_diag;
+	Kp_op_diag = 400*Vector6d::Ones();
+	Kv_op_diag = 40*Vector6d::Ones();
+	Kp_op = Kp_op_diag.asDiagonal();
+	Kv_op = Kv_op_diag.asDiagonal();
+	Matrix7d Kp_j, Kv_j;
+	Vector7d Kp_j_diag,  Kv_j_diag;
+	Kp_j_diag = 400*Vector7d::Ones();
+	Kv_j_diag = 40*Vector7d::Ones();
+	Kp_j = Kp_j_diag.asDiagonal();
+	Kv_j = Kv_j_diag.asDiagonal();
+
+	// error of pose 
+	Vector6d x_error, xd_error;
+	x_error.head(3) = x_desired - x_;
+	x_error.tail(3) = DyrosMath::getPhi(rotation_desired, rotation_);
+	xd_error = xd_desired - x_dot_;
+
+	// Pseudo kinetic energy matrix
+	Matrix6d m_x = (j_ * m_inverse_ * j_.transpose()).inverse();
+
+	// Desired End-effector Force
+	Vector6d ee_force;
+	ee_force = m_x * (Kp_op * x_error + Kv_op * xd_error);
+
+	// Null-space torque
+	Vector7d null_torque = m_ * ( Kp_j * (q_init_ - q_) -Kv_j * qdot_ );
+	
+	// Genealized Inverse of Jacobian (Dynamic Consistency)
+	Matrix<double, 7, 6> GeneralInvJ = m_.inverse() * j_.transpose() * m_x;
+	// ----------------------------------------------------------------------------
+
+	// ----------------------------------------------------------------------------
+	// Apply torque for each  joint
+	torque_desired_ = j_.transpose() * ee_force + (EYE(7) - j_.transpose() * GeneralInvJ.transpose()) * null_torque + g_;
+	// ----------------------------------------------------------------------------
+
+	// ----------------------------------------------------------------------------
+	// Save data
+	// [ current position, desired position, desired orientation, current orientation, joint position ]
+	recordHW10(17, duration, x_desired, rotation_desired);
+	// ----------------------------------------------------------------------------
+}
+
+void ArmController::hw_10_1_2(const Vector12d &diff_target_x, double duration)
+{
+	//------------------------------------------------------------------------
+	// Firstly, calculate desired pose and velocity ( end-effector ) for current time
+	// by given data ( target pose, duration ).
+	// Initial pose is given, initial and final velocity are zero.
+	
+	Vector6d xd_desired; // v, w
+	Vector3d x_desired; // only for position
+
+	// desired linear velocity
+	for (int i = 0; i < 3; i++) 
+	{
+		xd_desired(i) = DyrosMath::cubicDot(play_time_, control_start_time_,
+			control_start_time_ + duration, x_init_(i), (x_init_ + diff_target_x.head(3))(i), 0, 0);
+	}
+
+	// Get target rotation matrix
+	Matrix3d rotation;
+	for (int i = 0; i < 3; i++) 
+	{
+		rotation.block<3, 1>(0, i) = diff_target_x.segment<3>(3 + i * 3);
+	}
+
+	// desired angular velocity
+	xd_desired.tail(3) = DyrosMath::rotationCubicDot(play_time_, control_start_time_,
+		control_start_time_ + duration, Vector3d::Zero(), Vector3d::Zero(), rotation_init_, rotation_init_ + rotation);
+
+	// desired position
+	for (int i = 0; i < 3; i++)
+	{
+		x_desired(i) = DyrosMath::cubic(play_time_, control_start_time_,
+			control_start_time_ + duration, x_init_(i), (x_init_ + diff_target_x.head(3))(i), 0, 0);
+	}
+
+	// desired orientation
+	Matrix3d rotation_desired = DyrosMath::rotationCubic(play_time_, control_start_time_,
+		control_start_time_ + duration, rotation_init_, rotation_init_ + rotation);
+	//---------------------------------------------------------------------------
+	
+	//---------------------------------------------------------------------------
+	// After calcuate desired pose and velocity, 
+	// calculate desired EE force and null-space torque for closed loop.
+
+	// gain for closed loop
+	Matrix6d Kp_op, Kv_op;
+	Vector6d Kp_op_diag,  Kv_op_diag;
+	Kp_op_diag = 400*Vector6d::Ones();
+	Kv_op_diag = 40*Vector6d::Ones();
+	Kp_op = Kp_op_diag.asDiagonal();
+	Kv_op = Kv_op_diag.asDiagonal();
+	Matrix7d Kp_j, Kv_j;
+	Vector7d Kp_j_diag,  Kv_j_diag;
+	Kp_j_diag = 400*Vector7d::Ones();
+	Kv_j_diag = 40*Vector7d::Ones();
+	Kp_j = Kp_j_diag.asDiagonal();
+	Kv_j = Kv_j_diag.asDiagonal();
+
+	// error of pose 
+	Vector6d x_error, xd_error;
+	x_error.head(3) = x_desired - x_;
+	x_error.tail(3) = DyrosMath::getPhi(rotation_desired, rotation_);
+	xd_error = xd_desired - x_dot_;
+
+	// Pseudo kinetic energy matrix
+	Matrix6d m_x = (j_ * m_inverse_ * j_.transpose()).inverse();
+
+	// Desired End-effector Force
+	Vector6d ee_force;
+	ee_force = m_x * (Kp_op * x_error + Kv_op * xd_error);
+
+	// Null-space torque
+	Vector7d null_torque = m_ * ( Kp_j * (q_init_ - q_) -Kv_j * qdot_ );
+
+	// Genealized Inverse of Jacobian (Dynamic Consistency)
+	Matrix<double, 7, 6> GeneralInvJ = m_.inverse() * j_.transpose() * m_x;
+	// ----------------------------------------------------------------------------
+
+	// ----------------------------------------------------------------------------
+	// Apply torque for each  joint
+	torque_desired_ = j_.transpose() * ee_force + (EYE(7) - j_.transpose() * GeneralInvJ.transpose()) * null_torque + g_;
+	// ----------------------------------------------------------------------------
+
+	// ----------------------------------------------------------------------------
+	// Save data
+	// [ current position, desired position, desired orientation, current orientation, joint position ]
+	recordHW10(18, duration, x_desired, rotation_desired);
+	// ----------------------------------------------------------------------------
+}
+
+void ArmController::hw_10_2(const Vector3d &target_x, double duration)
+{
+	//------------------------------------------------------------------------
+	Vector6d xd_desired; // v, w
+
+	Vector3d x_desired; // only for position
+	if(play_time_ < control_start_time_ + duration/2)  x_desired = x_init_;
+	else x_desired = target_x;
+
+	// desired orientation
+	Matrix3d rotation_desired  = rotation_init_;
+	//---------------------------------------------------------------------------
+	
+	//---------------------------------------------------------------------------
+	// After calcuate desired pose and velocity, 
+	// calculate desired EE force and null-space torque for closed loop.
+	// And get desired velocity of EE space w.r.t Velocity Saturation.
+
+	// gain for closed loop
+	double Kp, Kv;
+	Kp = 400.0;
+	Kv = 40.0;
+
+	// Desired velocity of EE
+	double xd_max = 0.3;
+	if( ( Kp/Kv * (x_desired - x_) ).norm() < xd_max )    xd_desired.head(3) = Kp/Kv * (x_desired - x_);
+	else                                                  xd_desired.head(3) = xd_max / (x_desired - x_).norm() * (x_desired - x_);
+	xd_desired.tail(3) = Vector3d::Zero();
+
+	// error of pose 
+	Vector6d x_error, xd_error;
+	x_error.head(3) = Vector3d::Zero(); // No need to apply (Velocity saturation) 
+	x_error.tail(3) = DyrosMath::getPhi(rotation_desired, rotation_);
+	xd_error = xd_desired - x_dot_;
+
+	// Pseudo kinetic energy matrix
+	Matrix6d m_x = (j_ * m_inverse_ * j_.transpose()).inverse();
+
+	// Desired End-effector Force
+	Vector6d ee_force;
+	ee_force = m_x * (Kp * x_error + Kv * xd_error);
+
+	// Null-space torque
+	Vector7d null_torque = m_ * ( Kp * (q_init_ - q_) -Kv * qdot_ );
+
+	// Genealized Inverse of Jacobian (Dynamic Consistency)
+	Matrix<double, 7, 6> GeneralInvJ = m_.inverse() * j_.transpose() * m_x;
+	// ----------------------------------------------------------------------------
+
+	// ----------------------------------------------------------------------------
+	// Apply torque for each  joint
+	torque_desired_ = j_.transpose() * ee_force + (EYE(7) - j_.transpose() * GeneralInvJ.transpose()) * null_torque + g_;
+	// ----------------------------------------------------------------------------
+
+	// ----------------------------------------------------------------------------
+	// Save data
+	// [ desired position, current position, desired orientation, current orientation, desired velocity, current velocity, joint position ]
+	recordHW10(19, duration, x_desired, rotation_desired, xd_desired.head(3));
+	// ----------------------------------------------------------------------------
+}
+
+void ArmController::hw_10_3(const Vector3d &target_x, double duration)
+{
+	//------------------------------------------------------------------------
+	Vector6d xd_desired; // v, w
+
+	Vector3d x_desired; // only for position
+	if(play_time_ < control_start_time_ + duration/2)  x_desired = x_init_;
+	else x_desired = target_x;
+
+	// desired orientation
+	Matrix3d rotation_desired  = rotation_init_;
+	//---------------------------------------------------------------------------
+	
+	//---------------------------------------------------------------------------
+	// After calcuate desired pose and velocity, 
+	// calculate desired EE force and null-space torque for closed loop.
+	// And get desired velocity of EE space w.r.t Velocity Saturation.
+	// And get Potential Field force to avoid Obstacle.
+
+	// gain for closed loop
+	double Kp, Kv;
+	Kp = 400.0;
+	Kv = 40.0;
+
+	// Desired velocity of EE
+	double xd_max = 0.3;
+	if( ( Kp/Kv * (x_desired - x_) ).norm() < xd_max )    xd_desired.head(3) = Kp/Kv * (x_desired - x_);
+	else                                                  xd_desired.head(3) = xd_max / (x_desired - x_).norm() * (x_desired - x_);
+	xd_desired.tail(3) = Vector3d::Zero();
+
+	// error of pose 
+	Vector6d x_error, xd_error;
+	x_error.head(3) = Vector3d::Zero(); // No need to apply (Velocity saturation) 
+	x_error.tail(3) = DyrosMath::getPhi(rotation_desired, rotation_);
+	xd_error = xd_desired - x_dot_;
+
+	// Pseudo kinetic energy matrix
+	Matrix6d m_x = (j_ * m_inverse_ * j_.transpose()).inverse();
+
+	// Potential Field force
+	Vector3d x_obs;
+	x_obs << 0.15, -0.012, 0.65; 
+	double dist_obs, dist_0, k_obs;
+	dist_obs = (x_ - x_obs).norm();
+	dist_0 = 0.15;
+	k_obs = 0.1;
+	Vector3d tmp_rep_force = k_obs * (1/dist_obs - 1/dist_0) * pow(dist_obs, -3) * (x_ - x_obs);
+	Vector6d rep_force;
+	rep_force << tmp_rep_force, Vector3d::Zero();
+
+	// Desired End-effector Force
+	Vector6d ee_force;
+	ee_force = m_x * (Kp * x_error + Kv * xd_error + rep_force);
+
+	// Null-space torque
+	Vector7d null_torque = m_ * ( Kp * (q_init_ - q_) -Kv * qdot_ );
+
+	// Genealized Inverse of Jacobian (Dynamic Consistency)
+	Matrix<double, 7, 6> GeneralInvJ = m_.inverse() * j_.transpose() * m_x;
+	// ----------------------------------------------------------------------------
+
+	// ----------------------------------------------------------------------------
+	// Apply torque for each  joint
+	torque_desired_ = j_.transpose() * ee_force + (EYE(7) - j_.transpose() * GeneralInvJ.transpose()) * null_torque + g_;
+	// ----------------------------------------------------------------------------
+
+	// ----------------------------------------------------------------------------
+	// Save data
+	// [ desired position, current position, desired orientation, current orientation, desired velocity, current velocity, joint position ]
+	recordHW10(20, duration, x_desired, rotation_desired, xd_desired.head(3));
+	// ----------------------------------------------------------------------------
+}
 
 // Controller Core Methods ----------------------------
 

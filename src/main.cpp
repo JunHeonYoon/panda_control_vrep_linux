@@ -126,6 +126,18 @@ int main()
 			case '9':
 				ac.setMode("hw_8_2_2");
 				break;
+			case 'a':
+				ac.setMode("hw_10_1_1");
+				break;
+			case 's':
+				ac.setMode("hw_10_1_2");
+				break;
+			case 'd':
+				ac.setMode("hw_10_2");
+				break;
+			case 'f':
+				ac.setMode("hw_10_3");
+				break;
 			case '\t':
 				if (is_simulation_run) {
 					cout << "Simulation Pause" << endl;
