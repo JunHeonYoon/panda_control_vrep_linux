@@ -104,10 +104,9 @@ void VRepBridge::write()
 		// }
 		// simxSetJointTargetVelocity(clientID_, gripperHandle_[1], desired_gq_dot_(1), simx_opmode_streaming);
 		simxSetJointTargetPosition(clientID_, gripperHandle_[1], desired_gq_(1)*2, simx_opmode_streaming);
-		// simxSetJointTargetVelocity(clientID_, gripperHandle_[1], desired_gq_dot_(1), simx_opmode_streaming);
 		float posi;
 		simxGetJointPosition(clientID_, gripperHandle_[1], &posi, simx_opmode_streaming);
-		simxSetJointTargetPosition(clientID_, gripperHandle_[0], posi*0.5, simx_opmode_streaming);
+		simxSetJointTargetPosition(clientID_, gripperHandle_[0], (double)posi*0.5, simx_opmode_streaming);
 		break;
 	}
 	case CTRL_TORQUE:

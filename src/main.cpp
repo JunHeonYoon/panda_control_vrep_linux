@@ -52,13 +52,11 @@ int main()
 	while (vb.simConnectionCheck() && !exit_flag)
 	{
 		vb.read();
-		// ac.readData(vb.getPosition(), vb.getVelocity(), vb.getGripperPosition(), vb.getFTData());
 		ac.readData(vb.getPosition(), vb.getVelocity(), vb.getGripperPosition(), vb.getGripperVelocity(), vb.getGripperForce(), vb.getFTData());
 		if (is_first)
 		{
 			vb.simLoop();
 			vb.read();
-			// ac.readData(vb.getPosition(), vb.getVelocity(), vb.getGripperPosition(), vb.getFTData());
 			ac.readData(vb.getPosition(), vb.getVelocity(), vb.getGripperPosition(), vb.getGripperVelocity(), vb.getGripperForce(), vb.getFTData());
 			cout << "Initial q: " << vb.getPosition().transpose() << endl;
 			is_first = false;
@@ -83,57 +81,15 @@ int main()
 			case 'p':
 				ac.setMode("pick_obstacle");
 				break;
-			// case 'h':
-			// 	ac.setMode("joint_ctrl_home");
-			// 	break;Position
-			// case 't':
-			// 	ac.setMode("torque_ctrl_dynamic");
-			// 	break;
-			// case '1':
-			// 	ac.setMode("simple_jacobian");
-			// 	break;
-			// case '2':
-			// 	ac.setMode("feedback_jacobian");
-			// 	break;
-			// case '3':
-			// 	ac.setMode("CLIK");
-			// 	break;
-			// case '1':
-			// 	ac.setMode("hw_2_1");
-			// 	break;
-			// case '2':
-			// 	ac.setMode("hw_2_2");
-			// 	break;
-			// case '3':Position
-			// 	ac.setMode("hw_2_3");
-			// 	break;
-			// case '4':
-			// 	ac.setMode("hw_3_1");
-			// 	break;	
-			// case '5':
-			// 	ac.setMode("hw_3_2");
-			// 	break;		
-			// case '6':
-			// 	ac.setMode("hw_3_3");
-			// 	break;			
-			// case '1':
-			// 	ac.setMode("hw_4_1");
-			// 	break;
-			// case '2':
-			// 	ac.setMode("hw_4_2");
-			// 	break;
-			// case '3':
-			// 	ac.setMode("hw_4_3");
-			// 	break;
-			// case '4':
-			// 	ac.setMode("hw_5_1");
-			// 	break;
-			// case '5':
-			// 	ac.setMode("hw_5_2");
-			// 	break;
-			// case '6':
-			// 	ac.setMode("hw_7");
-			// 	break;
+			case '1':
+				ac.setMode("circle_traj");
+				break;
+			case '2':
+				ac.setMode("square_traj");
+				break;
+			case '3':
+				ac.setMode("eight_traj");
+				break;
 			case '\t':
 				if (is_simulation_run) {
 					cout << "Simulation Pause" << endl;

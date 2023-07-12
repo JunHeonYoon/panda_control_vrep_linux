@@ -88,6 +88,7 @@ class ArmController
 	double play_time_;
 	double hz_;
 	double control_start_time_;
+	unsigned long control_start_tick_;
 
 	std::string control_mode_;
 	bool is_mode_changed_;
@@ -101,6 +102,8 @@ class ArmController
 	Body body_[DOF];
 	Joint joint_[DOF];
 
+	std::vector<MatrixXd> traj_; // [x, y, z, x_dot, y_dot, z_dot]
+
 private:
 	MatrixXd jacobianFromqd(int mode); // mode=0 : end-effector, 1:COM of link
 	void printState();
@@ -113,19 +116,7 @@ private:
 	void simpleJacobianControl(const Vector12d &target_x, double duration);
 	void feedbackJacobianControl(const Vector12d & target_x, double duration);
 	void CLIK(const Vector12d & target_x, double duration);
-	void hw_2_1(const Vector12d & target_x, double duration);
-	void hw_2_2(const Vector12d & target_x, double duration);
-	void hw_2_3(const Vector12d & target_x, double duration);
-	void hw_3_1(const Vector6d & target_x, double duration);
-	void hw_3_2(const Vector6d & target_x, double duration);
-	void hw_3_3(const Vector6d & target_x, double duration, bool isStep);
-	void hw_4_1(const Vector7d & target_q, double duration);
-	void hw_4_2(const Vector7d & target_q, double duration, bool isStep);
-	void hw_4_3(const Vector7d & target_q, double duration, bool isStep);
-	void hw_5_1(const Vector12d & target_x, double duration, bool isStep);
-	void hw_5_2(const Vector12d & target_x, double duration);
-	void hw_7(const Vector12d & target_x, double duration);
-
+	void CLIKwTraj(const int traj_type);
 
 public:
 	void readData(const Vector7d &position, const Vector7d &velocity, const Vector7d &torque);
@@ -146,7 +137,7 @@ public:
 		ArmController(double hz) :
 		tick_(0), play_time_(0.0), hz_(hz), control_mode_("none"), is_mode_changed_(false)
 	{
-			initDimension(); initModel(); initFile();
+			initDimension(); initModel(); initFile(); readTrajFile();
 	}
 
 
@@ -154,6 +145,7 @@ public:
     void initDimension();
     void initModel();
 	void initFile();
+	void readTrajFile();
     void initPosition();
     void compute();
 private:
@@ -161,13 +153,13 @@ private:
 	constexpr static int NUM_HW_PLOT{20};
 	ofstream hw_plot_files_[NUM_HW_PLOT];
 	const string hw_plot_file_names_[NUM_HW_PLOT]
-	{"simple", "feedback", "clik", "reference", "hw_2_1", "hw_2_2", "hw_2_3", "hw_3_1", "hw_3_2", "hw_3_3_1", "hw_3_3_2"
-	, "hw_4_1", "hw_4_2", "hw_4_3_1", "hw_4_3_2", "hw_5_1_1", "hw_5_1_2", "hw_5_2", "hw_7"};
+	{"simple", "feedback", "clik", "reference", "CIRCLE", "SQUARE", "EIGHT"};
+
+	constexpr static int NUM_TRAJ_FILE{3};
+	const string traj_file_names_[NUM_TRAJ_FILE]
+	{"circle", "square", "eight"}; 
 
 	void record(int file_number, double duration);
 	void record(int file_number, double duration, const stringstream & ss);
-	void recordHW2(int file_number, double duration, const Vector3d & x_desired);
-	void recordHw3(int file_number, double duration, const Vector6d & x_desired);
-	void recordHw4(int file_number, double duration, const Vector7d & q_desired);
-	void recordHw5(int file_number, double duration, const Vector3d & x_desired, const Vector6d & xd_desired);
+	void recordFT(int file_number, double duration);
 };
